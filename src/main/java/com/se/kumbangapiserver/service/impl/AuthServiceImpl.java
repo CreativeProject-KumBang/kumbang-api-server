@@ -10,10 +10,12 @@ import com.se.kumbangapiserver.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -38,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
                 .roles(List.of("ROLE_USER"))
                 .build();
 
+        
         userRepository.save(newUser);
         signDTO.setResult("success");
         signDTO.setMessage("회원가입 성공");

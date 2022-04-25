@@ -2,6 +2,7 @@ package com.se.kumbangapiserver.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
+import com.se.kumbangapiserver.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -40,12 +41,25 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(name = "removed_at")
     private LocalDateTime removedAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
+
+    public static User fromDTO(UserDTO user) {
+        return User.builder()
+                .id(Long.valueOf(user.getId()))
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .name(user.getName())
+                .removedAt(user.getRemovedAt())
+                .roles(user.getRole())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
+    }
 
 //    @Column
 //    @Enumerated(EnumType.STRING)
@@ -96,5 +110,20 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+
+    public UserDTO toDTO() {
+
+        return UserDTO.builder()
+                .id(String.valueOf(this.id))
+                .email(this.email)
+                .password(this.password)
+                .name(this.name)
+                .removedAt(this.removedAt)
+                .role(this.roles)
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
+                .build();
     }
 }
