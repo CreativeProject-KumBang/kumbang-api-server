@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -33,14 +34,18 @@ public class AuthServiceImpl implements AuthService {
             return signDTO;
         }
         String encodedPw = passwordEncoder.encode(signUpDTO.getPassword());
+
+        LocalDateTime now = LocalDateTime.now();
         User newUser = User.builder()
                 .email(signUpDTO.getEmail())
                 .name(signUpDTO.getName())
                 .password(encodedPw)
                 .roles(List.of("ROLE_USER"))
+                .createdAt(now)
+                .updatedAt(now)
                 .build();
 
-        
+
         userRepository.save(newUser);
         signDTO.setResult("success");
         signDTO.setMessage("회원가입 성공");
