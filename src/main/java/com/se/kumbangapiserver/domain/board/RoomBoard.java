@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @AllArgsConstructor
@@ -38,9 +39,11 @@ public class RoomBoard extends BaseTimeEntity {
 
     @Column(name = "board_state")
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private BoardState state = BoardState.OPEN;
 
     @Column(name = "hit_count")
+    @Builder.Default
     private int hitCount = 0;
 
     @Column(name = "duration_start")
@@ -67,13 +70,11 @@ public class RoomBoard extends BaseTimeEntity {
     @Column(name = "additional_option")
     private String additionalOption;
 
-    @Builder.Default
     @Column(name = "cord_x")
-    private Double cordX = 0.0;
+    private String cordX;
 
-    @Builder.Default
     @Column(name = "cord_y")
-    private Double cordY = 0.0;
+    private String cordY;
 
     @Column(name = "removed_at")
     private LocalDateTime removedAt;
@@ -85,6 +86,7 @@ public class RoomBoard extends BaseTimeEntity {
     @Embedded
     private Details details;
 
+    @Builder.Default
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomBoard", orphanRemoval = true)
     private List<BoardFiles> files = new ArrayList<>();
 
@@ -98,6 +100,34 @@ public class RoomBoard extends BaseTimeEntity {
 
     public void changeState(BoardState state) {
         this.state = state;
+    }
+
+    public void setRemoved() {
+        this.removedAt = LocalDateTime.now();
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setNewBoard(List<String> coordinate) {
+        this.state = BoardState.OPEN;
+        hitCount = 0;
+        if (!Objects.equals(coordinate.get(0), "") && !Objects.equals(coordinate.get(1), "")) {
+            this.cordX = coordinate.get(0);
+            this.cordY = coordinate.get(1);
+        } else {
+            this.cordX = "0";
+            this.cordY = "0";
+        }
+        LocalDateTime now = LocalDateTime.now();
+        setCreatedAt(now);
+        setUpdatedAt(now);
+    }
+
+    public void setCoordinate(String cordX, String cordY) {
+        this.cordX = cordX;
+        this.cordY = cordY;
     }
 
     public static RoomBoard fromDTO(BoardDetailDTO boardDetailDTO) {

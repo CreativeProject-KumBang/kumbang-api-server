@@ -39,8 +39,8 @@ public class BoardDetailDTO {
     private int contractMonthlyFee;
     private String fixedOption;
     private String additionalOption;
-    private Double cordX;
-    private Double cordY;
+    private String cordX;
+    private String cordY;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;

@@ -35,4 +35,28 @@ public class BoardController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @DeleteMapping("/api/board/{id}")
+    @ResponseBody
+    public ResponseEntity<Boolean> deleteBoard(@PathVariable("id") String id) {
+        try {
+            boardService.deleteBoard(id);
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PutMapping("/api/board/{id}")
+    @ResponseBody
+    public ResponseEntity<Long> updateBoard(@PathVariable("id") String id, @RequestBody BoardDetailDTO newBoard) {
+        try {
+            return ResponseEntity.ok(boardService.updateBoard(newBoard));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }

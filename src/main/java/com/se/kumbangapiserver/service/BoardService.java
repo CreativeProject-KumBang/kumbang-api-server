@@ -7,5 +7,9 @@ public interface BoardService {
 
     BoardDetailDTO getBoardDetail(String boardId);
 
-    Long createBoard(BoardDetailDTO boardDetailDTO);
+    Long createBoard(BoardDetailDTO boardDetailDTO) throws Exception;
+
+    void deleteBoard(String boardId);
+
+    Long updateBoard(BoardDetailDTO boardDetailDTO);
 }
