@@ -21,7 +21,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
-    @Value("spring.jwt.secret")
+    @Value("${external.jwt.secret}")
     private String secretKey;
 
     private final Long tokenExpirationTime = 1000L * 60 * 60;
