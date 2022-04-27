@@ -3,8 +3,13 @@ spring:
     ansi:
       enabled: always
 
+external:
   jwt:
     secret: bangkum@#!
+  map:
+    api:
+      key: 46b3b45f86bcab6cf712624343656024
+
 ---
 
 spring:
