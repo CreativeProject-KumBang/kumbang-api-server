@@ -33,6 +33,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    private static final String[] PERMIT_URL_ARRAY = {
+            /* sign in, sign up */
+            "/api/member/signup",
+            "/api/member/signin"
+    };
+
     @Override // This method is used to configure the HTTP security
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -41,16 +47,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/member/signup", "/api/member/signin").permitAll()
+                .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .anyRequest().hasRole("USER")
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-    }
-
-
-    @Override // This method is used to exclude the static resources from being protected by Spring Security
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/security", "/swagger-ui.html", "/webjars/**");
     }
 
 }
