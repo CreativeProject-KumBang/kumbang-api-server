@@ -3,12 +3,11 @@ package com.se.kumbangapiserver.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.se.kumbangapiserver.domain.board.BoardState;
 import com.se.kumbangapiserver.domain.board.Details;
+import com.se.kumbangapiserver.domain.board.PriceType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,7 +24,7 @@ public class BoardDetailDTO {
     private String title;
     private String content;
     private UserDTO user;
-    private int hitCount;
+    private Integer hitCount;
     private BoardState state;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -35,12 +34,17 @@ public class BoardDetailDTO {
 
     private String location;
     private String locationDetail;
-    private int contractDeposit;
-    private int contractMonthlyFee;
+    private Integer contractDeposit;
+    private Integer contractMonthlyFee;
+    private Integer price;
+    private PriceType priceType;
+    private Integer deposit;
     private String fixedOption;
     private String additionalOption;
     private String cordX;
     private String cordY;
+
+    private RegionDTO region;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;

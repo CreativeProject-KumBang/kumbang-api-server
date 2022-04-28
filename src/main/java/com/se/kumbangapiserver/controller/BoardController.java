@@ -2,6 +2,7 @@ package com.se.kumbangapiserver.controller;
 
 import com.se.kumbangapiserver.common.ResponseForm;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
+import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -46,7 +48,6 @@ public class BoardController {
             boardService.deleteBoard(id);
             return ResponseEntity.ok(true);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
@@ -57,9 +58,18 @@ public class BoardController {
         try {
             return ResponseEntity.ok(boardService.updateBoard(newBoard));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/api/board/list")
+    @ResponseBody
+    public ResponseEntity<BoardListDTO> getBoard(@RequestParam Map<String, String> params) {
+
+        BoardListDTO boardList = boardService.getBoardList(params);
+
+
+        return ResponseEntity.ok(boardList);
     }
 
 }

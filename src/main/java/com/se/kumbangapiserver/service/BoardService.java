@@ -2,6 +2,9 @@ package com.se.kumbangapiserver.service;
 
 
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
+import com.se.kumbangapiserver.dto.BoardListDTO;
+
+import java.util.Map;
 
 public interface BoardService {
 
@@ -12,4 +15,6 @@ public interface BoardService {
     void deleteBoard(String boardId);
 
     Long updateBoard(BoardDetailDTO boardDetailDTO);
+
+    BoardListDTO getBoardList(Map<String, String> params);
 }

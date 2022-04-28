@@ -34,7 +34,7 @@ public class File {
     private String type;
 
     @OneToMany(mappedBy = "file", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BoardFiles> boardFiles = new ArrayList<>();
+    private List<BoardFiles> boardFiles;
 
     public static File fromDTO(FileDTO fileDTO) {
         return File.builder()

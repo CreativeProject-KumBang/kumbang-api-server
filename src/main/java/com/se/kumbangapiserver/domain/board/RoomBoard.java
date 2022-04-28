@@ -1,5 +1,6 @@
 package com.se.kumbangapiserver.domain.board;
 
+import com.se.kumbangapiserver.domain.archive.Region;
 import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 @Entity
 @AllArgsConstructor
@@ -44,7 +45,7 @@ public class RoomBoard extends BaseTimeEntity {
 
     @Column(name = "hit_count")
     @Builder.Default
-    private int hitCount = 0;
+    private Integer hitCount = 0;
 
     @Column(name = "duration_start")
     private LocalDate durationStart;
@@ -59,10 +60,21 @@ public class RoomBoard extends BaseTimeEntity {
     private String locationDetail;
 
     @Column(name = "contract_deposit")
-    private int contractDeposit;
+    private Integer contractDeposit;
 
     @Column(name = "contract_monthly_fee")
-    private int contractMonthlyFee;
+    private Integer contractMonthlyFee;
+
+    @Column(name = "price")
+    private Integer price;
+
+    @Column(name = "price_type")
+    @Enumerated(EnumType.STRING)
+    private PriceType priceType;
+
+    @Column(name = "deposit")
+    private Integer deposit;
+
 
     @Column(name = "fixed_option")
     private String fixedOption;
@@ -90,6 +102,10 @@ public class RoomBoard extends BaseTimeEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomBoard", orphanRemoval = true)
     private List<BoardFiles> files = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private Region region;
+
     public List<BoardFiles> getBoardFiles() {
         return files;
     }
@@ -110,16 +126,21 @@ public class RoomBoard extends BaseTimeEntity {
         return user;
     }
 
-    public void setNewBoard(List<String> coordinate) {
+
+    public void setNewBoard(Map<String, String> data) {
         this.state = BoardState.OPEN;
         hitCount = 0;
-        if (!Objects.equals(coordinate.get(0), "") && !Objects.equals(coordinate.get(1), "")) {
-            this.cordX = coordinate.get(0);
-            this.cordY = coordinate.get(1);
-        } else {
-            this.cordX = "0";
-            this.cordY = "0";
+        this.cordX = "0";
+        this.cordY = "0";
+
+        if (data.containsKey("road_address")) {
+            this.cordX = data.get("road_address_x");
+            this.cordY = data.get("road_address_y");
+        } else if (data.containsKey("address")) {
+            this.cordX = data.get("address_x");
+            this.cordY = data.get("address_y");
         }
+
         LocalDateTime now = LocalDateTime.now();
         setCreatedAt(now);
         setUpdatedAt(now);
@@ -130,7 +151,7 @@ public class RoomBoard extends BaseTimeEntity {
         this.cordY = cordY;
     }
 
-    public static RoomBoard fromDTO(BoardDetailDTO boardDetailDTO) {
+    public static RoomBoard createEntityFromDTO(BoardDetailDTO boardDetailDTO) {
 
         RoomBoard roomBoard = RoomBoard.builder()
                 .id(boardDetailDTO.getBoardId())
@@ -145,12 +166,11 @@ public class RoomBoard extends BaseTimeEntity {
                 .locationDetail(boardDetailDTO.getLocationDetail())
                 .contractDeposit(boardDetailDTO.getContractDeposit())
                 .contractMonthlyFee(boardDetailDTO.getContractMonthlyFee())
+                .price(boardDetailDTO.getPrice())
+                .priceType(boardDetailDTO.getPriceType())
+                .deposit(boardDetailDTO.getDeposit())
                 .fixedOption(boardDetailDTO.getFixedOption())
                 .additionalOption(boardDetailDTO.getAdditionalOption())
-                .cordX(boardDetailDTO.getCordX())
-                .cordY(boardDetailDTO.getCordY())
-                .removedAt(boardDetailDTO.getRemovedAt())
-                .distance(boardDetailDTO.getDistance())
                 .details(boardDetailDTO.getDetails())
                 .build();
 
@@ -197,5 +217,12 @@ public class RoomBoard extends BaseTimeEntity {
         }
 
         return boardDetailDTO;
+    }
+
+    public void setRegion(Region region) {
+        if (region != null) {
+            region.getRoomBoardList().remove(this);
+        }
+        this.region = region;
     }
 }

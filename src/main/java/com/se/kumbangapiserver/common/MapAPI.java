@@ -14,7 +14,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class MapAPI {
     @Value("${external.map.api.key}")
     private String apiKey;
 
-    public List<String> AddressToCoordinate(String address) {
+    public Map<String, String> AddressToCoordinate(String address) {
         String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8);
         String url = "https://dapi.kakao.com/v2/local/search/address.json?query="
                 + encodedAddress
@@ -32,13 +33,22 @@ public class MapAPI {
         return getCoordinate(getJSONData(url));
     }
 
-    public String CoordinateToAddress(String x, String y) {
+    public Map<String, String> CoordinateToAddress(String x, String y) {
         String url = "https://dapi.kakao.com//v2/local/geo/coord2address.json?x="
                 + x
                 + "&y="
                 + y;
 
         return getAddress(getJSONData(url));
+    }
+
+    public Map<String, String> CoordinateToRegion(String x, String y) {
+        String url = "https://dapi.kakao.com/v2/local/geo/coord2regioncode.json?x="
+                + x
+                + "&y="
+                + y;
+
+        return getRegion(getJSONData(url));
     }
 
     // Get JSON from Kakao Map API
@@ -79,40 +89,91 @@ public class MapAPI {
         }
     }
 
-    public static List<String> getCoordinate(String jsonString) {
-        String coordinate_x = "";
-        String coordinate_y = "";
+    public static Map<String, String> getCoordinate(String jsonString) {
+        Map<String, String> data = new HashMap<>();
         JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonString);
         JSONObject meta = (JSONObject) jsonObject.get("meta");
         Integer size = (Integer) meta.get("total_count");
 
         if (size > 0) {
             JSONArray documents = (JSONArray) jsonObject.get("documents");
-            JSONObject document = (JSONObject) documents.get(0);
-            coordinate_x = (String) document.get("x");
-            coordinate_y = (String) document.get("y");
-        }
-        return List.of(coordinate_x, coordinate_y);
-    }
-
-    public static String getAddress(String jsonString) {
-        String address = "";
-        JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonString);
-        JSONObject meta = (JSONObject) jsonObject.get("meta");
-        Integer size = (Integer) meta.get("total_count");
-
-        if (size > 0) {
-            JSONArray documents = (JSONArray) jsonObject.get("documents");
-            JSONObject document = (JSONObject) documents.get(0);
-            JSONObject roadAddress = (JSONObject) document.get("road_address");
-
-            if (roadAddress == null) {
-                JSONObject subObject = (JSONObject) document.get("address");
-                address = (String) subObject.get("address_name");
-            } else {
-                address = (String) roadAddress.get("address_name");
+            JSONObject document = (JSONObject) documents.get(0); // 첫 결과 가져옴
+            if (document.containsKey("address")) { // 주소가 있는 경우
+                addressInsert(data, document);
+                data.put("address_x", (String) document.get("x"));
+                data.put("address_y", (String) document.get("y"));
+            }
+            if (document.containsKey("road_address")) { // 도로명 주소가 있는 경우
+                roadAddressInsert(data, document);
+                data.put("road_address_x", (String) document.get("x"));
+                data.put("road_address_y", (String) document.get("y"));
             }
         }
-        return address;
+        return data;
+    }
+
+    public static Map<String, String> getAddress(String jsonString) {
+        Map<String, String> data = new HashMap<>();
+
+        JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonString);
+        JSONObject meta = (JSONObject) jsonObject.get("meta");
+        Integer size = (Integer) meta.get("total_count");
+
+        if (size > 0) {
+            JSONArray documents = (JSONArray) jsonObject.get("documents");
+            JSONObject document = (JSONObject) documents.get(0);
+            if (document.containsKey("address")) {
+                addressInsert(data, document);
+            }
+            if (document.containsKey("road_address")) {
+                roadAddressInsert(data, document);
+            }
+        }
+        return data;
+    }
+
+    private static void roadAddressInsert(Map<String, String> data, JSONObject document) {
+        JSONObject roadAddress = (JSONObject) document.get("road_address");
+        data.put("road_address", "1");
+        data.put("road_address_name", (String) roadAddress.get("address_name"));
+        data.put("road_address_region_1depth_name", (String) roadAddress.get("region_1depth_name"));
+        data.put("road_address_region_2depth_name", (String) roadAddress.get("region_2depth_name"));
+        data.put("road_address_region_3depth_name", (String) roadAddress.get("region_3depth_name"));
+    }
+
+    private static void addressInsert(Map<String, String> data, JSONObject document) {
+        JSONObject address = (JSONObject) document.get("address");
+        data.put("address", "1");
+        data.put("address_name", (String) address.get("address_name"));
+        data.put("address_region_1depth_name", (String) address.get("region_1depth_name"));
+        data.put("address_region_2depth_name", (String) address.get("region_2depth_name"));
+        data.put("address_region_3depth_name", (String) address.get("region_3depth_name"));
+    }
+
+    public Map<String, String> getRegion(String jsonString) {
+        Map<String, String> region = new HashMap<>();
+        JSONObject jsonObject = (JSONObject) JSONValue.parse(jsonString);
+        JSONObject meta = (JSONObject) jsonObject.get("meta");
+        Integer size = (Integer) meta.get("total_count");
+
+        if (size > 0) {
+            JSONArray documents = (JSONArray) jsonObject.get("documents");
+            JSONObject document = (JSONObject) documents.get(0);
+            if (document.get("region_type").equals("H")) {
+                if (size > 1) {
+                    document = (JSONObject) documents.get(1);
+                }
+            }
+
+            region.put("address_name", (String) document.get("address_name"));
+            region.put("region_1depth_name", (String) document.get("region_1depth_name"));
+            region.put("region_2depth_name", (String) document.get("region_2depth_name"));
+            region.put("region_3depth_name", (String) document.get("region_3depth_name"));
+            region.put("region_4depth_name", (String) document.get("region_4depth_name"));
+            region.put("x", (String) document.get("x"));
+            region.put("y", (String) document.get("y"));
+
+        }
+        return region;
     }
 }

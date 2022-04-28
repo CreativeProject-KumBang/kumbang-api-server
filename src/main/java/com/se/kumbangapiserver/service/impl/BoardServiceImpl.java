@@ -2,17 +2,19 @@ package com.se.kumbangapiserver.service.impl;
 
 import com.se.kumbangapiserver.common.Common;
 import com.se.kumbangapiserver.common.MapAPI;
+import com.se.kumbangapiserver.domain.archive.RegionRepository;
 import com.se.kumbangapiserver.domain.board.RoomBoard;
 import com.se.kumbangapiserver.domain.board.RoomBoardRepository;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
+import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -22,6 +24,7 @@ import java.util.Optional;
 public class BoardServiceImpl implements BoardService {
 
     private final RoomBoardRepository roomBoardRepository;
+    private final RegionRepository regionRepository;
     private final MapAPI mapAPI;
 
     @Override
@@ -36,11 +39,17 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public Long createBoard(BoardDetailDTO boardDetailDTO) {
-        RoomBoard roomBoard = RoomBoard.fromDTO(boardDetailDTO);
+        RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
 
-        List<String> coordinate = mapAPI.AddressToCoordinate(boardDetailDTO.getLocation() + " " + boardDetailDTO.getLocationDetail());
+        Map<String, String> data = mapAPI.AddressToCoordinate(boardDetailDTO.getLocation() + " " + boardDetailDTO.getLocationDetail());
+        regionRepository.findByStateAndCityAndTown(
+                data.get("road_address_region_1depth_name"),
+                data.get("road_address_region_2depth_name"),
+                data.get("road_address_region_3depth_name")
+        ).ifPresent(roomBoard::setRegion);
 
-        roomBoard.setNewBoard(coordinate);
+
+        roomBoard.setNewBoard(data);
 
         RoomBoard save = roomBoardRepository.save(roomBoard);
 
@@ -68,11 +77,16 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public Long updateBoard(BoardDetailDTO boardDetailDTO) {
-        RoomBoard roomBoard = RoomBoard.fromDTO(boardDetailDTO);
+        RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
         roomBoard.setUpdatedAt(LocalDateTime.now());
         RoomBoard save = roomBoardRepository.save(roomBoard);
 
         return save.getId();
+    }
+
+    @Override
+    public BoardListDTO getBoardList(Map<String, String> params) {
+        return null;
     }
 
 
