@@ -170,8 +170,8 @@ public class MapAPI {
             region.put("region_2depth_name", (String) document.get("region_2depth_name"));
             region.put("region_3depth_name", (String) document.get("region_3depth_name"));
             region.put("region_4depth_name", (String) document.get("region_4depth_name"));
-            region.put("x", (String) document.get("x"));
-            region.put("y", (String) document.get("y"));
+            region.put("x", String.valueOf(document.get("x")));
+            region.put("y", String.valueOf(document.get("y")));
 
         }
         return region;

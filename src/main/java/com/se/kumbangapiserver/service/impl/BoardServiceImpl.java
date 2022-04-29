@@ -42,14 +42,19 @@ public class BoardServiceImpl implements BoardService {
         RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
 
         Map<String, String> data = mapAPI.AddressToCoordinate(boardDetailDTO.getLocation() + " " + boardDetailDTO.getLocationDetail());
-        regionRepository.findByStateAndCityAndTown(
-                data.get("road_address_region_1depth_name"),
-                data.get("road_address_region_2depth_name"),
-                data.get("road_address_region_3depth_name")
-        ).ifPresent(roomBoard::setRegion);
-
 
         roomBoard.setNewBoard(data);
+
+        Map<String, String> region = mapAPI.CoordinateToRegion(roomBoard.getCordX(), roomBoard.getCordY());
+
+        regionRepository.findByStateAndCityAndTown(
+                region.get("region_1depth_name"),
+                region.get("region_2depth_name"),
+                region.get("region_3depth_name")
+        ).ifPresent(r -> {
+            roomBoard.setRegion(r);
+            r.addBoard(roomBoard);
+        });
 
         RoomBoard save = roomBoardRepository.save(roomBoard);
 
@@ -86,6 +91,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public BoardListDTO getBoardList(Map<String, String> params) {
+
         return null;
     }
 

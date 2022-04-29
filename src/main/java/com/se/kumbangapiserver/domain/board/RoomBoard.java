@@ -1,5 +1,6 @@
 package com.se.kumbangapiserver.domain.board;
 
+import com.se.kumbangapiserver.domain.archive.CompleteTransaction;
 import com.se.kumbangapiserver.domain.archive.Region;
 import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
 import com.se.kumbangapiserver.domain.user.User;
@@ -102,9 +103,12 @@ public class RoomBoard extends BaseTimeEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomBoard", orphanRemoval = true)
     private List<BoardFiles> files = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "region_id")
     private Region region;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "roomBoard", cascade = CascadeType.PERSIST)
+    private CompleteTransaction completeTransaction;
 
     public List<BoardFiles> getBoardFiles() {
         return files;
@@ -126,6 +130,9 @@ public class RoomBoard extends BaseTimeEntity {
         return user;
     }
 
+    public Integer getPrice() {
+        return price;
+    }
 
     public void setNewBoard(Map<String, String> data) {
         this.state = BoardState.OPEN;
@@ -149,6 +156,14 @@ public class RoomBoard extends BaseTimeEntity {
     public void setCoordinate(String cordX, String cordY) {
         this.cordX = cordX;
         this.cordY = cordY;
+    }
+
+    public String getCordX() {
+        return cordX;
+    }
+
+    public String getCordY() {
+        return cordY;
     }
 
     public static RoomBoard createEntityFromDTO(BoardDetailDTO boardDetailDTO) {

@@ -4,6 +4,7 @@ import com.se.kumbangapiserver.common.ResponseForm;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.service.BoardService;
+import com.se.kumbangapiserver.service.RegionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ public class BoardController {
 
 
     private final BoardService boardService;
+    private final RegionService regionService;
 
     @GetMapping("/api/board/{id}")
     @ResponseBody
@@ -37,6 +39,7 @@ public class BoardController {
             Long board = boardService.createBoard(newBoard);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(List.of(board.toString())).build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }
@@ -66,8 +69,12 @@ public class BoardController {
     @ResponseBody
     public ResponseEntity<BoardListDTO> getBoard(@RequestParam Map<String, String> params) {
 
-        BoardListDTO boardList = boardService.getBoardList(params);
-
+        BoardListDTO boardList = null;
+        if (Integer.parseInt(params.get("scale")) < 200 && Integer.parseInt(params.get("scale")) > 0) {
+            boardList = boardService.getBoardList(params);
+        } else if (Integer.parseInt(params.get("scale")) > 200) {
+            boardList = regionService.getRegionAvg(params);
+        }
 
         return ResponseEntity.ok(boardList);
     }
