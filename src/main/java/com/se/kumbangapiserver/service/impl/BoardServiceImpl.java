@@ -10,13 +10,17 @@ import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +35,7 @@ public class BoardServiceImpl implements BoardService {
     public BoardDetailDTO getBoardDetail(String boardId) {
         Optional<RoomBoard> findBoard = roomBoardRepository.findById(Long.valueOf(boardId));
         if (findBoard.isPresent()) {
-            BoardDetailDTO boardDetailDTO = findBoard.get().toDTO();
+            BoardDetailDTO boardDetailDTO = findBoard.get().toDetailDTO();
         }
         return null;
     }
@@ -90,10 +94,58 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardListDTO getBoardList(Map<String, String> params) {
+    public Page<BoardListDTO> getBoardList(Map<String, String> params, Pageable pageable) {
 
-        return null;
+        Page<BoardListDTO> boardList;
+
+        BigDecimal x = new BigDecimal(params.get("x"));
+        BigDecimal y = new BigDecimal(params.get("y"));
+        BigDecimal minX;
+        BigDecimal maxX;
+        BigDecimal minY;
+        BigDecimal maxY;
+
+        if (Integer.parseInt(params.get("level")) < 3) {
+
+            minX = x.subtract(new BigDecimal("0.012"));
+            maxX = x.add(new BigDecimal("0.012"));
+            minY = y.subtract(new BigDecimal("0.012"));
+            maxY = y.add(new BigDecimal("0.012"));
+
+
+        } else {
+            minX = x.subtract(new BigDecimal("0.04"));
+            maxX = x.add(new BigDecimal("0.04"));
+            minY = y.subtract(new BigDecimal("0.04"));
+            maxY = y.add(new BigDecimal("0.04"));
+
+        }
+
+        boardList = findListAndSort(pageable, x, y, minX, maxX, minY, maxY);
+
+
+        return boardList;
     }
 
+    private Page<BoardListDTO> findListAndSort(Pageable pageable, BigDecimal x, BigDecimal y, BigDecimal minX, BigDecimal maxX, BigDecimal minY, BigDecimal maxY) {
+        Page<RoomBoard> boardList;
+        boardList = roomBoardRepository.findByCordXBetweenAndCordYBetween(
+                minX.toString(),
+                maxX.toString(),
+                minY.toString(),
+                maxY.toString(),
+                pageable
+        );
+        boardList.stream().forEach(board ->
+                board.setDistance(x, y)
+        );
 
+        Page<BoardListDTO> boardListDTOPage = boardList.map(RoomBoard::toListDTO);
+        Stream<BoardListDTO> sorted = boardListDTOPage.stream().sorted(
+                Comparator.comparing(BoardListDTO::getDistance)
+        );
+
+        return new PageImpl<>(sorted.collect(Collectors.toList()), pageable, boardListDTOPage.getTotalElements());
+
+    }
 }

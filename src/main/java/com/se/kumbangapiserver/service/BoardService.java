@@ -3,6 +3,8 @@ package com.se.kumbangapiserver.service;
 
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Map;
 
@@ -16,5 +18,5 @@ public interface BoardService {
 
     Long updateBoard(BoardDetailDTO boardDetailDTO);
 
-    BoardListDTO getBoardList(Map<String, String> params);
+    Page<BoardListDTO> getBoardList(Map<String, String> params, Pageable pageable);
 }

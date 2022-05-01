@@ -4,8 +4,9 @@ import com.se.kumbangapiserver.common.ResponseForm;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.service.BoardService;
-import com.se.kumbangapiserver.service.RegionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class BoardController {
 
 
     private final BoardService boardService;
-    private final RegionService regionService;
+//    private final RegionService regionService;
 
     @GetMapping("/api/board/{id}")
     @ResponseBody
@@ -67,14 +68,9 @@ public class BoardController {
 
     @GetMapping("/api/board/list")
     @ResponseBody
-    public ResponseEntity<BoardListDTO> getBoard(@RequestParam Map<String, String> params) {
+    public ResponseEntity<Page<BoardListDTO>> getBoard(@RequestParam Map<String, String> params, Pageable pageable) {
 
-        BoardListDTO boardList = null;
-        if (Integer.parseInt(params.get("scale")) < 200 && Integer.parseInt(params.get("scale")) > 0) {
-            boardList = boardService.getBoardList(params);
-        } else if (Integer.parseInt(params.get("scale")) > 200) {
-            boardList = regionService.getRegionAvg(params);
-        }
+        Page<BoardListDTO> boardList = boardService.getBoardList(params, pageable);
 
         return ResponseEntity.ok(boardList);
     }

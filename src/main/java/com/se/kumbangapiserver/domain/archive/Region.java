@@ -92,4 +92,15 @@ public class Region {
                 .quantity(Integer.valueOf(region.getQuantity()))
                 .build();
     }
+
+    public RegionDTO toDTO() {
+        return RegionDTO.builder()
+                .state(this.state)
+                .city(this.city)
+                .town(this.town)
+                .enty(this.enty)
+                .entx(this.entx)
+                .quantity(this.quantity.toString())
+                .build();
+    }
 }

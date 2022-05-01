@@ -5,6 +5,7 @@ import com.se.kumbangapiserver.domain.archive.Region;
 import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
+import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.dto.FileDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -92,14 +94,12 @@ public class RoomBoard extends BaseTimeEntity {
     @Column(name = "removed_at")
     private LocalDateTime removedAt;
 
-    @Builder.Default
     @Transient
-    private Double distance = 0.0;
+    private BigDecimal distance;
 
     @Embedded
     private Details details;
 
-    @Builder.Default
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomBoard", orphanRemoval = true)
     private List<BoardFiles> files = new ArrayList<>();
 
@@ -199,7 +199,7 @@ public class RoomBoard extends BaseTimeEntity {
         return roomBoard;
     }
 
-    public BoardDetailDTO toDTO() {
+    public BoardDetailDTO toDetailDTO() {
 
         BoardDetailDTO boardDetailDTO = BoardDetailDTO.builder()
                 .boardId(this.id)
@@ -218,6 +218,8 @@ public class RoomBoard extends BaseTimeEntity {
                 .additionalOption(this.additionalOption)
                 .cordX(this.cordX)
                 .cordY(this.cordY)
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
                 .removedAt(this.removedAt)
                 .distance(this.distance)
                 .details(this.details)
@@ -234,10 +236,45 @@ public class RoomBoard extends BaseTimeEntity {
         return boardDetailDTO;
     }
 
+    public BoardListDTO toListDTO() {
+        return BoardListDTO.builder()
+                .id(this.id)
+                .title(this.title)
+                .author(this.user.toDTO())
+                .state(this.state)
+                .hitCount(this.hitCount)
+                .durationStart(this.durationStart)
+                .durationEnd(this.durationEnd)
+                .location(this.location)
+                .locationDetail(this.locationDetail)
+                .price(this.price)
+                .priceType(this.priceType)
+                .deposit(this.deposit)
+                .cordX(this.cordX)
+                .cordY(this.cordY)
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
+                .removedAt(this.removedAt)
+                .distance(this.distance)
+                .region(this.region.toDTO())
+                .build();
+    }
+
     public void setRegion(Region region) {
         if (region != null) {
             region.getRoomBoardList().remove(this);
         }
         this.region = region;
+    }
+
+    public void setDistance(BigDecimal x, BigDecimal y) {
+
+        BigDecimal xDiff = x.subtract(new BigDecimal(this.cordX));
+        BigDecimal yDiff = y.subtract(new BigDecimal(this.cordY));
+        this.distance = xDiff.pow(2).add(yDiff.pow(2));
+    }
+
+    public BigDecimal getDistance() {
+        return this.distance;
     }
 }
