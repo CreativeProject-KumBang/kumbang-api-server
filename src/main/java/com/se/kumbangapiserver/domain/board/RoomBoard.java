@@ -101,7 +101,7 @@ public class RoomBoard extends BaseTimeEntity {
     private Details details;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "roomBoard", orphanRemoval = true)
-    private List<BoardFiles> files = new ArrayList<>();
+    private List<BoardFiles> files;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "region_id")

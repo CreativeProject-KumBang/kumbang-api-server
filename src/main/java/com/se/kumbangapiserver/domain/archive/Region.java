@@ -95,6 +95,7 @@ public class Region {
 
     public RegionDTO toDTO() {
         return RegionDTO.builder()
+                .id(this.id)
                 .state(this.state)
                 .city(this.city)
                 .town(this.town)

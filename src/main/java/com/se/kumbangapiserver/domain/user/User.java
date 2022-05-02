@@ -122,12 +122,12 @@ public class User extends BaseTimeEntity implements UserDetails {
         return UserDTO.builder()
                 .id(String.valueOf(this.id))
                 .email(this.email)
-                .password(this.password)
                 .name(this.name)
                 .removedAt(this.removedAt)
                 .role(this.roles)
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
+                .removedAt(this.removedAt)
                 .build();
     }
 }

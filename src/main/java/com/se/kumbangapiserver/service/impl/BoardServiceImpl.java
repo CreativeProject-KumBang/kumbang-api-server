@@ -107,19 +107,21 @@ public class BoardServiceImpl implements BoardService {
 
         if (Integer.parseInt(params.get("level")) < 3) {
 
-            minX = x.subtract(new BigDecimal("0.012"));
-            maxX = x.add(new BigDecimal("0.012"));
-            minY = y.subtract(new BigDecimal("0.012"));
-            maxY = y.add(new BigDecimal("0.012"));
+            minX = x.subtract(new BigDecimal("0.02"));
+            maxX = x.add(new BigDecimal("0.02"));
+            minY = y.subtract(new BigDecimal("0.02"));
+            maxY = y.add(new BigDecimal("0.02"));
 
 
         } else {
-            minX = x.subtract(new BigDecimal("0.04"));
-            maxX = x.add(new BigDecimal("0.04"));
-            minY = y.subtract(new BigDecimal("0.04"));
-            maxY = y.add(new BigDecimal("0.04"));
+            minX = x.subtract(new BigDecimal("0.06"));
+            maxX = x.add(new BigDecimal("0.06"));
+            minY = y.subtract(new BigDecimal("0.06"));
+            maxY = y.add(new BigDecimal("0.06"));
 
         }
+
+        System.out.println(minX + " " + maxX + " " + minY + " " + maxY);
 
         boardList = findListAndSort(pageable, x, y, minX, maxX, minY, maxY);
 
