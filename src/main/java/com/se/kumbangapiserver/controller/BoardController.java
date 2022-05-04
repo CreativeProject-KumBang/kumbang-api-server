@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,12 +25,12 @@ public class BoardController {
 
     @GetMapping("/api/board/{id}")
     @ResponseBody
-    public ResponseEntity<BoardDetailDTO> getBoardDetail(@PathVariable("id") String id) {
+    public ResponseEntity<ResponseForm<Object>> getBoardDetail(@PathVariable("id") String id) {
         BoardDetailDTO boardDetail = boardService.getBoardDetail(id);
         if (boardDetail == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("Not Found")).build());
         }
-        return ResponseEntity.ok(boardDetail);
+        return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(boardDetail)).build());
     }
 
 //    @GetMapping("/api/board/{id}")
@@ -44,48 +45,50 @@ public class BoardController {
 
     @PostMapping("/api/board/new")
     @ResponseBody
-    public ResponseEntity<ResponseForm> createBoard(@RequestBody BoardDetailDTO newBoard) {
+    public ResponseEntity<ResponseForm<Object>> createBoard(@RequestBody BoardDetailDTO newBoard) {
         try {
             System.out.println("newBoard = " + newBoard.toString());
             Long board = boardService.createBoard(newBoard);
-            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(List.of(board.toString())).build());
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(board)).build());
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
 
     @DeleteMapping("/api/board/{id}")
     @ResponseBody
-    public ResponseEntity<Boolean> deleteBoard(@PathVariable("id") String id) {
+    public ResponseEntity<ResponseForm<Object>> deleteBoard(@PathVariable("id") String id) {
         try {
             boardService.deleteBoard(id);
-            return ResponseEntity.ok(true);
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList("success")).build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
 
     @PutMapping("/api/board/{id}")
     @ResponseBody
-    public ResponseEntity<Long> updateBoard(@PathVariable("id") String id, @RequestBody BoardDetailDTO newBoard) {
+    public ResponseEntity<ResponseForm<Object>> updateBoard(@PathVariable("id") String id, @RequestBody BoardDetailDTO newBoard) {
         try {
-            return ResponseEntity.ok(boardService.updateBoard(newBoard));
+            Long updatedId = boardService.updateBoard(newBoard);
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(updatedId)).build());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
 
     @GetMapping("/api/board/list")
     @ResponseBody
-    public ResponseEntity<Page<BoardListDTO>> getBoard(
+    public ResponseEntity<ResponseForm<Object>> getBoard(
             @RequestParam Map<String, String> params,
             Pageable pageable
     ) {
-
-        Page<BoardListDTO> boardList = boardService.getBoardList(params, pageable);
-
-        return ResponseEntity.ok(boardList);
+        try {
+            Page<BoardListDTO> boardList = boardService.getBoardList(params, pageable);
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(boardList)).build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
+        }
     }
 
 }

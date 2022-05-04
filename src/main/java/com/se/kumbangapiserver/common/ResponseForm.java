@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class ResponseForm {
+public class ResponseForm<T> {
     private Boolean status;
-    private List<String> response;
+    private List<T> response;
 }
