@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class FileDTO {
+public class FilesDTO {
 
     private Long id;
     private String name;

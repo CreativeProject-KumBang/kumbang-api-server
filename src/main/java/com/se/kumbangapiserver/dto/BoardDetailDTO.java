@@ -58,9 +58,9 @@ public class BoardDetailDTO {
     private BigDecimal distance;
     private Details details;
 
-    private List<FileDTO> files;
+    private List<FilesDTO> files;
 
-    public void setFiles(List<FileDTO> files) {
+    public void setFiles(List<FilesDTO> files) {
         this.files = files;
     }
 }

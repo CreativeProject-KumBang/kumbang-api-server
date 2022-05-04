@@ -1,13 +1,12 @@
-package com.se.kumbangapiserver.domain.board;
+package com.se.kumbangapiserver.domain.file;
 
-import com.se.kumbangapiserver.dto.FileDTO;
+import com.se.kumbangapiserver.domain.board.BoardFiles;
+import com.se.kumbangapiserver.dto.FilesDTO;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -15,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "file")
-public class File {
+public class Files {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_id")
@@ -33,16 +32,20 @@ public class File {
     @Column(name = "type")
     private String type;
 
-    @OneToMany(mappedBy = "file", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "files", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardFiles> boardFiles;
 
-    public static File fromDTO(FileDTO fileDTO) {
-        return File.builder()
-                .id(fileDTO.getId())
-                .name(fileDTO.getName())
-                .path(fileDTO.getPath())
-                .size(Long.valueOf(fileDTO.getSize()))
-                .type(fileDTO.getType())
+    public Long getId() {
+        return id;
+    }
+
+    public static Files fromDTO(FilesDTO filesDTO) {
+        return Files.builder()
+                .id(filesDTO.getId())
+                .name(filesDTO.getName())
+                .path(filesDTO.getPath())
+                .size(Long.valueOf(filesDTO.getSize()))
+                .type(filesDTO.getType())
                 .build();
     }
 
@@ -50,9 +53,9 @@ public class File {
         return boardFiles;
     }
 
-    public FileDTO toDTO() {
+    public FilesDTO toDTO() {
 
-        return FileDTO.builder()
+        return FilesDTO.builder()
                 .id(id)
                 .name(name)
                 .path(path)

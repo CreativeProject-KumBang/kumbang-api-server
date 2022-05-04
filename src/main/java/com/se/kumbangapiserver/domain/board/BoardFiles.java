@@ -1,5 +1,6 @@
 package com.se.kumbangapiserver.domain.board;
 
+import com.se.kumbangapiserver.domain.file.Files;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -23,24 +24,24 @@ public class BoardFiles {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "file_id", nullable = false)
-    private File file;
+    private Files files;
 
-    public static BoardFiles makeRelation(RoomBoard roomBoard, File file) {
+    public static BoardFiles makeRelation(RoomBoard roomBoard, Files files) {
 
         BoardFiles boardFiles = new BoardFiles();
         boardFiles.setRoomBoard(roomBoard);
-        boardFiles.setFile(file);
+        boardFiles.setFiles(files);
         return boardFiles;
     }
 
-    public File getFile() {
-        return file;
+    public Files getFiles() {
+        return files;
     }
 
-    private void setFile(File file) {
-        this.file = file;
-        if (file != null) {
-            file.getBoardFiles().add(this);
+    private void setFiles(Files files) {
+        this.files = files;
+        if (files != null) {
+            files.getBoardFiles().add(this);
         }
     }
 

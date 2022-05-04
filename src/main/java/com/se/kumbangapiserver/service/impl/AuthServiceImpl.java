@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 @Service
 public class AuthServiceImpl implements AuthService {
 

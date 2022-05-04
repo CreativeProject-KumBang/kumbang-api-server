@@ -44,7 +44,6 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public Long createBoard(BoardDetailDTO boardDetailDTO) {
-        System.out.println("boardDetailDTO = " + boardDetailDTO.toString());
         RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
 
         Map<String, String> data = mapAPI.AddressToCoordinate(boardDetailDTO.getLocation() + " " + boardDetailDTO.getLocationDetail());

@@ -3,10 +3,11 @@ package com.se.kumbangapiserver.domain.board;
 import com.se.kumbangapiserver.domain.archive.CompleteTransaction;
 import com.se.kumbangapiserver.domain.archive.Region;
 import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
+import com.se.kumbangapiserver.domain.file.Files;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
-import com.se.kumbangapiserver.dto.FileDTO;
+import com.se.kumbangapiserver.dto.FilesDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -191,8 +192,8 @@ public class RoomBoard extends BaseTimeEntity {
 
         if (boardDetailDTO.getFiles() != null) {
             List<BoardFiles> boardFiles = roomBoard.getBoardFiles();
-            for (FileDTO fileDTO : boardDetailDTO.getFiles()) {
-                boardFiles.add(BoardFiles.makeRelation(roomBoard, File.fromDTO(fileDTO)));
+            for (FilesDTO filesDTO : boardDetailDTO.getFiles()) {
+                boardFiles.add(BoardFiles.makeRelation(roomBoard, Files.fromDTO(filesDTO)));
             }
         }
 
@@ -230,11 +231,11 @@ public class RoomBoard extends BaseTimeEntity {
                 .build();
 
         if (this.files != null) {
-            List<FileDTO> fileDTOs = new ArrayList<>();
+            List<FilesDTO> filesDTOs = new ArrayList<>();
             for (BoardFiles boardFiles : this.files) {
-                fileDTOs.add(boardFiles.getFile().toDTO());
+                filesDTOs.add(boardFiles.getFiles().toDTO());
             }
-            boardDetailDTO.setFiles(fileDTOs);
+            boardDetailDTO.setFiles(filesDTOs);
         }
 
         return boardDetailDTO;
