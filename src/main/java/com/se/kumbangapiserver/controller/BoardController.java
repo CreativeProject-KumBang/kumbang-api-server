@@ -21,7 +21,6 @@ public class BoardController {
 
 
     private final BoardService boardService;
-//    private final RegionService regionService;
 
     @GetMapping("/api/board/{id}")
     @ResponseBody
@@ -33,10 +32,21 @@ public class BoardController {
         return ResponseEntity.ok(boardDetail);
     }
 
+//    @GetMapping("/api/board/{id}")
+//    @ResponseBody
+//    public ResponseEntity<ResponseForm> getBoardDetail(@PathVariable("id") String id) {
+//        BoardDetailDTO boardDetail = boardService.getBoardDetail(id);
+//        if (boardDetail == null) {
+//            return ResponseEntity.notFound().build();
+//        }
+//        return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(List.of(boardDetail.toString())).build());
+//    }
+
     @PostMapping("/api/board/new")
     @ResponseBody
     public ResponseEntity<ResponseForm> createBoard(@RequestBody BoardDetailDTO newBoard) {
         try {
+            System.out.println("newBoard = " + newBoard.toString());
             Long board = boardService.createBoard(newBoard);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(List.of(board.toString())).build());
         } catch (Exception e) {
@@ -68,7 +78,10 @@ public class BoardController {
 
     @GetMapping("/api/board/list")
     @ResponseBody
-    public ResponseEntity<Page<BoardListDTO>> getBoard(@RequestParam Map<String, String> params, Pageable pageable) {
+    public ResponseEntity<Page<BoardListDTO>> getBoard(
+            @RequestParam Map<String, String> params,
+            Pageable pageable
+    ) {
 
         Page<BoardListDTO> boardList = boardService.getBoardList(params, pageable);
 

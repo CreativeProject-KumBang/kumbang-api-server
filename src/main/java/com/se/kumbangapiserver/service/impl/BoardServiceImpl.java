@@ -34,21 +34,22 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardDetailDTO getBoardDetail(String boardId) {
         Optional<RoomBoard> findBoard = roomBoardRepository.findById(Long.valueOf(boardId));
+        BoardDetailDTO boardDetailDTO = null;
         if (findBoard.isPresent()) {
-            BoardDetailDTO boardDetailDTO = findBoard.get().toDetailDTO();
+            boardDetailDTO = findBoard.get().toDetailDTO();
         }
-        return null;
+        return boardDetailDTO;
     }
 
     @Override
     @Transactional
     public Long createBoard(BoardDetailDTO boardDetailDTO) {
+        System.out.println("boardDetailDTO = " + boardDetailDTO.toString());
         RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
 
         Map<String, String> data = mapAPI.AddressToCoordinate(boardDetailDTO.getLocation() + " " + boardDetailDTO.getLocationDetail());
 
         roomBoard.setNewBoard(data);
-
         Map<String, String> region = mapAPI.CoordinateToRegion(roomBoard.getCordX(), roomBoard.getCordY());
 
         regionRepository.findByStateAndCityAndTown(
@@ -100,36 +101,24 @@ public class BoardServiceImpl implements BoardService {
 
         BigDecimal x = new BigDecimal(params.get("x"));
         BigDecimal y = new BigDecimal(params.get("y"));
-        BigDecimal minX;
-        BigDecimal maxX;
-        BigDecimal minY;
-        BigDecimal maxY;
 
+        String range = "0.06";
         if (Integer.parseInt(params.get("level")) < 3) {
-
-            minX = x.subtract(new BigDecimal("0.02"));
-            maxX = x.add(new BigDecimal("0.02"));
-            minY = y.subtract(new BigDecimal("0.02"));
-            maxY = y.add(new BigDecimal("0.02"));
-
-
-        } else {
-            minX = x.subtract(new BigDecimal("0.06"));
-            maxX = x.add(new BigDecimal("0.06"));
-            minY = y.subtract(new BigDecimal("0.06"));
-            maxY = y.add(new BigDecimal("0.06"));
-
+            range = "0.02";
         }
 
-        System.out.println(minX + " " + maxX + " " + minY + " " + maxY);
-
-        boardList = findListAndSort(pageable, x, y, minX, maxX, minY, maxY);
-
+        boardList = findListAndSort(pageable, x, y, range);
 
         return boardList;
     }
 
-    private Page<BoardListDTO> findListAndSort(Pageable pageable, BigDecimal x, BigDecimal y, BigDecimal minX, BigDecimal maxX, BigDecimal minY, BigDecimal maxY) {
+    private Page<BoardListDTO> findListAndSort(Pageable pageable, BigDecimal x, BigDecimal y, String range) {
+
+        BigDecimal minX = x.subtract(new BigDecimal(range));
+        BigDecimal maxX = x.add(new BigDecimal(range));
+        BigDecimal minY = y.subtract(new BigDecimal(range));
+        BigDecimal maxY = y.add(new BigDecimal(range));
+
         Page<RoomBoard> boardList;
         boardList = roomBoardRepository.findByCordXBetweenAndCordYBetween(
                 minX.toString(),

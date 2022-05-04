@@ -214,8 +214,12 @@ public class RoomBoard extends BaseTimeEntity {
                 .locationDetail(this.locationDetail)
                 .contractDeposit(this.contractDeposit)
                 .contractMonthlyFee(this.contractMonthlyFee)
+                .price(this.price)
+                .priceType(this.priceType)
+                .deposit(this.deposit)
                 .fixedOption(this.fixedOption)
                 .additionalOption(this.additionalOption)
+                .region(this.region.toRegionDetailDTO())
                 .cordX(this.cordX)
                 .cordY(this.cordY)
                 .createdAt(this.getCreatedAt())
@@ -256,7 +260,7 @@ public class RoomBoard extends BaseTimeEntity {
                 .updatedAt(this.getUpdatedAt())
                 .removedAt(this.removedAt)
                 .distance(this.distance)
-                .region(this.region.toDTO())
+                .region(this.region.toRegionDetailDTO())
                 .build();
     }
 

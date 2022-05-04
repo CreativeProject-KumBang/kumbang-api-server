@@ -7,6 +7,7 @@ import com.se.kumbangapiserver.domain.board.PriceType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
-
+@ToString
 public class BoardDetailDTO {
 
     private Long boardId;
@@ -45,7 +46,7 @@ public class BoardDetailDTO {
     private String cordX;
     private String cordY;
 
-    private RegionDTO region;
+    private RegionDetailDTO region;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;

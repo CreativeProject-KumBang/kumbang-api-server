@@ -1,5 +1,6 @@
 package com.se.kumbangapiserver.dto;
 
+import com.se.kumbangapiserver.domain.archive.Region;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegionDTO {
+public class RegionDetailDTO {
     private Long id;
     private String state;
     private String city;
@@ -18,4 +19,6 @@ public class RegionDTO {
     private String entx;
     private String enty;
     private String quantity;
+    private String price;
+
 }

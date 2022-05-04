@@ -8,7 +8,6 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Builder
 @Getter
@@ -32,6 +31,6 @@ public class BoardListDTO {
     private LocalDateTime updatedAt;
     private LocalDateTime removedAt;
     private BigDecimal distance;
-    private RegionDTO region;
+    private RegionDetailDTO region;
 
 }
