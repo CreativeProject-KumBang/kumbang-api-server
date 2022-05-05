@@ -13,9 +13,11 @@ external:
     api:
       key: 46b3b45f86bcab6cf712624343656024
 
-  file:
-    upload:
-      path: /Users/lichee55/tmp/uploads
+  static:
+    url:
+      outbound: /image/**
+      inbound: /Users/lichee55/tmp/uploads/
+
 
 ---
 

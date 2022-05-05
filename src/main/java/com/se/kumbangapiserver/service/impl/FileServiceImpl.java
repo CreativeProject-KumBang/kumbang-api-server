@@ -22,8 +22,8 @@ public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
 
-    @Value("${external.file.upload.path}")
-    private final String filePath;
+    @Value("${external.static.url.inbound}")
+    private String filePath;
 
     @Override
     public List<Long> saveFile(List<MultipartFile> files) {
@@ -32,9 +32,10 @@ public class FileServiceImpl implements FileService {
             try {
                 String fileId = UUID.randomUUID().toString();
                 String originalFileName = file.getOriginalFilename();
-                String fileExtension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : null;
+                String fileExtension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".") + 1) : null;
                 originalFileName = originalFileName != null ? originalFileName.substring(0, originalFileName.lastIndexOf(".")) : null;
                 Long fileSize = file.getSize();
+                String dbPath = "/images/" + fileId + "." + fileExtension;
 
                 File newFile = new File(filePath, fileId + "." + fileExtension);
                 if (!newFile.exists()) {
@@ -48,7 +49,7 @@ public class FileServiceImpl implements FileService {
 
                 Files savedFile = Files.builder()
                         .name(originalFileName)
-                        .path(newFile.getPath())
+                        .path(dbPath)
                         .size(fileSize)
                         .type(fileExtension)
                         .build();
@@ -62,4 +63,20 @@ public class FileServiceImpl implements FileService {
         }
         return filePks;
     }
+
+    @Override
+    public void deleteFile(List<Long> fileIds) {
+        for (Long fileId : fileIds) {
+            Files file = fileRepository.findById(fileId).orElseThrow(() -> new RuntimeException("File not found."));
+            File fileToDelete = new File(file.getPath());
+            if (fileToDelete.exists()) {
+                boolean delete = fileToDelete.delete();
+                if (!delete) {
+                    throw new RuntimeException("Failed to delete file.");
+                }
+            }
+            fileRepository.delete(file);
+        }
+    }
+
 }

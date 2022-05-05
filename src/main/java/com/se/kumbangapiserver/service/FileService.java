@@ -8,4 +8,6 @@ public interface FileService {
 
     List<Long> saveFile(List<MultipartFile> files);
 
+    void deleteFile(List<Long> fileIds);
+
 }

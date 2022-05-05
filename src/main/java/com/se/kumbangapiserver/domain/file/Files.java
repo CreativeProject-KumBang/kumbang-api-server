@@ -39,6 +39,10 @@ public class Files {
         return id;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     public static Files fromDTO(FilesDTO filesDTO) {
         return Files.builder()
                 .id(filesDTO.getId())
