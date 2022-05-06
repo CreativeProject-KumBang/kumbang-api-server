@@ -91,4 +91,15 @@ public class BoardController {
         }
     }
 
+    @GetMapping("/api/board/isLike")
+    @ResponseBody
+    public ResponseEntity<ResponseForm<Object>> isLike(@RequestParam Map<String, String> params) {
+        try {
+            Boolean isLike = boardService.isLike(params);
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(isLike)).build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
+        }
+    }
+
 }

@@ -35,7 +35,7 @@ public class FileServiceImpl implements FileService {
                 String fileExtension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".") + 1) : null;
                 originalFileName = originalFileName != null ? originalFileName.substring(0, originalFileName.lastIndexOf(".")) : null;
                 Long fileSize = file.getSize();
-                String dbPath = "/images/" + fileId + "." + fileExtension;
+                String dbPath = "/image/" + fileId + "." + fileExtension;
 
                 File newFile = new File(filePath, fileId + "." + fileExtension);
                 if (!newFile.exists()) {

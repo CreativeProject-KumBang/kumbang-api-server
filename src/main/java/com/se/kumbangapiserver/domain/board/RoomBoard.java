@@ -111,6 +111,9 @@ public class RoomBoard extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "roomBoard", cascade = CascadeType.PERSIST)
     private CompleteTransaction completeTransaction;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", orphanRemoval = true, cascade = CascadeType.PERSIST)
+    private List<WishList> wishList;
+
     public List<BoardFiles> getBoardFiles() {
         return files;
     }

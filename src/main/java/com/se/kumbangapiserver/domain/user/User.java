@@ -1,6 +1,7 @@
 package com.se.kumbangapiserver.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.se.kumbangapiserver.domain.board.WishList;
 import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
 import com.se.kumbangapiserver.dto.UserDTO;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Table(name = "users")
 public class User extends BaseTimeEntity implements UserDetails {
 
@@ -47,6 +47,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<WishList> wishLists = new ArrayList<>();
 
     public static User fromDTO(UserDTO user) {
         return User.builder()
@@ -79,6 +82,10 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     public Long getId() {
         return id;
+    }
+
+    public List<WishList> getWishLists() {
+        return wishLists;
     }
 
     @Override

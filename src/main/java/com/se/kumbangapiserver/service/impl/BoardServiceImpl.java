@@ -5,6 +5,8 @@ import com.se.kumbangapiserver.common.MapAPI;
 import com.se.kumbangapiserver.domain.archive.RegionRepository;
 import com.se.kumbangapiserver.domain.board.RoomBoard;
 import com.se.kumbangapiserver.domain.board.RoomBoardRepository;
+import com.se.kumbangapiserver.domain.board.WishList;
+import com.se.kumbangapiserver.domain.board.WishListRepository;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
@@ -30,6 +32,8 @@ public class BoardServiceImpl implements BoardService {
     private final RoomBoardRepository roomBoardRepository;
     private final RegionRepository regionRepository;
     private final MapAPI mapAPI;
+
+    private final WishListRepository wishlistRepository;
 
     @Override
     public BoardDetailDTO getBoardDetail(String boardId) {
@@ -109,6 +113,29 @@ public class BoardServiceImpl implements BoardService {
         boardList = findListAndSort(pageable, x, y, range);
 
         return boardList;
+    }
+
+    @Override
+    public Boolean isLike(Map<String, String> params) {
+
+        User contextUser = Common.getUserContext();
+        return contextUser.getWishLists().stream().anyMatch(wishList -> wishList.getBoard().getId().equals(Long.valueOf(params.get("boardId"))));
+    }
+
+    @Override
+    public Boolean like(Map<String, String> params) {
+        User contextUser = Common.getUserContext();
+        RoomBoard roomBoard = roomBoardRepository.findById(Long.valueOf(params.get("boardId"))).orElseThrow(() -> new RuntimeException("존재하지 않는 게시글입니다."));
+        Optional<WishList> wishlist = wishlistRepository.findByUserIdAndBoardId(contextUser.getId(), roomBoard.getId());
+
+        if (wishlist.isPresent()) {
+            wishlistRepository.delete(wishlist.get());
+            return false;
+        } else {
+            WishList build = WishList.builder().user(contextUser).board(roomBoard).build();
+            wishlistRepository.save(build);
+            return true;
+        }
     }
 
     private Page<BoardListDTO> findListAndSort(Pageable pageable, BigDecimal x, BigDecimal y, String range) {

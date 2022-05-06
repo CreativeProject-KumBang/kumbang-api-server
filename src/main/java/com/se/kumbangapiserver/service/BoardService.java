@@ -19,4 +19,9 @@ public interface BoardService {
     Long updateBoard(BoardDetailDTO boardDetailDTO);
 
     Page<BoardListDTO> getBoardList(Map<String, String> params, Pageable pageable);
+
+    Boolean isLike(Map<String, String> params);
+
+    Boolean like(Map<String, String> params);
+
 }
