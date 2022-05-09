@@ -3,11 +3,9 @@ package com.se.kumbangapiserver.service.impl;
 import com.se.kumbangapiserver.common.Common;
 import com.se.kumbangapiserver.common.MapAPI;
 import com.se.kumbangapiserver.domain.archive.RegionRepository;
-import com.se.kumbangapiserver.domain.board.RoomBoard;
-import com.se.kumbangapiserver.domain.board.RoomBoardRepository;
-import com.se.kumbangapiserver.domain.board.WishList;
-import com.se.kumbangapiserver.domain.board.WishListRepository;
+import com.se.kumbangapiserver.domain.board.*;
 import com.se.kumbangapiserver.domain.user.User;
+import com.se.kumbangapiserver.domain.user.UserRepository;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.service.BoardService;
@@ -31,7 +29,9 @@ public class BoardServiceImpl implements BoardService {
 
     private final RoomBoardRepository roomBoardRepository;
     private final RegionRepository regionRepository;
+    private final UserRepository userRepository;
     private final MapAPI mapAPI;
+
 
     private final WishListRepository wishlistRepository;
 
@@ -119,22 +119,40 @@ public class BoardServiceImpl implements BoardService {
     public Boolean isLike(Map<String, String> params) {
 
         User contextUser = Common.getUserContext();
-        return contextUser.getWishLists().stream().anyMatch(wishList -> wishList.getBoard().getId().equals(Long.valueOf(params.get("boardId"))));
+        User persistedUser = userRepository.findById(contextUser.getId()).orElseThrow(() -> new RuntimeException("유저 정보가 없습니다."));
+        return persistedUser.getWishLists().stream().anyMatch(wishList -> wishList.getBoard().getId().equals(Long.valueOf(params.get("boardId"))));
     }
 
     @Override
     public Boolean like(Map<String, String> params) {
+
         User contextUser = Common.getUserContext();
+        User persistedUser = userRepository.findById(contextUser.getId()).orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
+        RoomBoard roomBoard = roomBoardRepository.findById(Long.valueOf(params.get("boardId"))).orElseThrow(() -> new RuntimeException("존재하지 않는 게시글입니다."));
+        Optional<WishList> wishlist = wishlistRepository.findByUserIdAndBoardId(contextUser.getId(), roomBoard.getId());
+
+        if (wishlist.isPresent()) {
+            return false;
+        } else {
+            WishList build = WishList.builder().user(persistedUser).board(roomBoard).build();
+            wishlistRepository.save(build);
+            return true;
+        }
+    }
+
+    @Override
+    public Boolean unlike(Map<String, String> params) {
+
+        User contextUser = Common.getUserContext();
+        User persistedUser = userRepository.findById(contextUser.getId()).orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
         RoomBoard roomBoard = roomBoardRepository.findById(Long.valueOf(params.get("boardId"))).orElseThrow(() -> new RuntimeException("존재하지 않는 게시글입니다."));
         Optional<WishList> wishlist = wishlistRepository.findByUserIdAndBoardId(contextUser.getId(), roomBoard.getId());
 
         if (wishlist.isPresent()) {
             wishlistRepository.delete(wishlist.get());
-            return false;
-        } else {
-            WishList build = WishList.builder().user(contextUser).board(roomBoard).build();
-            wishlistRepository.save(build);
             return true;
+        } else {
+            return false;
         }
     }
 

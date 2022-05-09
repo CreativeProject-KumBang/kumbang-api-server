@@ -24,4 +24,6 @@ public interface BoardService {
 
     Boolean like(Map<String, String> params);
 
+    Boolean unlike(Map<String, String> params);
+
 }

@@ -138,6 +138,10 @@ public class RoomBoard extends BaseTimeEntity {
         return price;
     }
 
+    public void setState(BoardState state) {
+        this.state = state;
+    }
+
     public void setNewBoard(Map<String, String> data) {
         this.state = BoardState.OPEN;
         hitCount = 0;
