@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -32,16 +31,6 @@ public class BoardController {
         }
         return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(boardDetail)).build());
     }
-
-//    @GetMapping("/api/board/{id}")
-//    @ResponseBody
-//    public ResponseEntity<ResponseForm> getBoardDetail(@PathVariable("id") String id) {
-//        BoardDetailDTO boardDetail = boardService.getBoardDetail(id);
-//        if (boardDetail == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(List.of(boardDetail.toString())).build());
-//    }
 
     @PostMapping("/api/board/new")
     @ResponseBody
@@ -102,4 +91,14 @@ public class BoardController {
         }
     }
 
+    @GetMapping("/api/board/like")
+    @ResponseBody
+    public ResponseEntity<ResponseForm<Object>> like(@RequestParam Map<String, String> params) {
+        try {
+            Boolean like = boardService.like(params);
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(like)).build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
+        }
+    }
 }

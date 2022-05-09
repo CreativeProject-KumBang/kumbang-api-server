@@ -25,7 +25,6 @@ public class SignController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new SignDTO("fail", e.getMessage(), null));
         }
-
     }
 
     @PostMapping(value = "/api/member/signup")
@@ -36,12 +35,6 @@ public class SignController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new SignDTO("fail", "가입이 완료되지 않았습니다.", null));
         }
-    }
-
-    @PostMapping(value = "/api/member/hello")
-    @ResponseBody
-    public String hello() {
-        return "hello";
     }
 
 }
