@@ -23,6 +23,10 @@ public class CompleteTransaction extends BaseTimeEntity {
     @Column(name = "tran_address")
     private String address;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private Region region;
+
     @Column(name = "close_year")
     private String year;
 

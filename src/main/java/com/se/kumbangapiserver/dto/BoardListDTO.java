@@ -32,5 +32,6 @@ public class BoardListDTO {
     private LocalDateTime removedAt;
     private BigDecimal distance;
     private RegionDetailDTO region;
+    private FilesDTO thumbnail;
 
 }

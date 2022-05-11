@@ -41,6 +41,18 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private String nickname;
+
+    @Column(nullable = false)
+    private String phoneNumber;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
+    private String birthDate;
+
     @Column(name = "removed_at")
     private LocalDateTime removedAt;
 
@@ -86,6 +98,11 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     public List<WishList> getWishLists() {
         return wishLists;
+    }
+
+    public void setNewInfo(UserDTO user) {
+        this.name = user.getName();
+        this.setUpdatedAt(LocalDateTime.now());
     }
 
     @Override

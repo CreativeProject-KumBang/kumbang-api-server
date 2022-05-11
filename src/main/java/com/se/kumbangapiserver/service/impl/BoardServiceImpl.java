@@ -2,12 +2,18 @@ package com.se.kumbangapiserver.service.impl;
 
 import com.se.kumbangapiserver.common.Common;
 import com.se.kumbangapiserver.common.MapAPI;
+import com.se.kumbangapiserver.domain.archive.CompleteTransaction;
+import com.se.kumbangapiserver.domain.archive.CompleteTransactionRepository;
+import com.se.kumbangapiserver.domain.archive.Region;
 import com.se.kumbangapiserver.domain.archive.RegionRepository;
 import com.se.kumbangapiserver.domain.board.*;
+import com.se.kumbangapiserver.domain.file.FileRepository;
+import com.se.kumbangapiserver.domain.file.Files;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.domain.user.UserRepository;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
+import com.se.kumbangapiserver.dto.CompleteDataDTO;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +36,9 @@ public class BoardServiceImpl implements BoardService {
     private final RoomBoardRepository roomBoardRepository;
     private final RegionRepository regionRepository;
     private final UserRepository userRepository;
+    private final CompleteTransactionRepository completeTransactionRepository;
+    private final FileRepository fileRepository;
+    private final BoardFilesRepository boardFilesRepository;
     private final MapAPI mapAPI;
 
 
@@ -63,6 +72,16 @@ public class BoardServiceImpl implements BoardService {
             roomBoard.setRegion(r);
             r.addBoard(roomBoard);
         });
+
+        boardDetailDTO.getImages().forEach(i -> {
+                    Optional<Files> image = fileRepository.findById(Long.valueOf(i));
+                    if (image.isEmpty()) {
+                        return;
+                    }
+                    BoardFiles boardFiles = BoardFiles.makeRelation(roomBoard, image.get());
+                    boardFilesRepository.save(boardFiles);
+                }
+        );
 
         RoomBoard save = roomBoardRepository.save(roomBoard);
 
@@ -154,6 +173,50 @@ public class BoardServiceImpl implements BoardService {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Boolean complete(String boardId, CompleteDataDTO completeDataDTO) {
+
+        RoomBoard roomBoard = roomBoardRepository.findById(Long.valueOf(boardId)).orElseThrow(() -> new RuntimeException("존재하지 않는 게시글입니다."));
+        if (roomBoard.getState().equals(BoardState.CLOSED)) {
+            return false;
+        }
+        roomBoard.setState(BoardState.CLOSED);
+        roomBoard.setUpdatedAt(LocalDateTime.now());
+        roomBoard.setCompleteData(completeDataDTO);
+
+        roomBoardRepository.save(roomBoard);
+
+        Region region = regionRepository.findById(roomBoard.getRegion().getId()).orElseThrow(() -> new RuntimeException("존재하지 않는 지역입니다."));
+        region.removeBoard(roomBoard);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        CompleteTransaction trans = CompleteTransaction.builder()
+                .address(roomBoard.getLocation())
+                .region(roomBoard.getRegion())
+                .year(String.valueOf(now.getYear()))
+                .month(String.valueOf(now.getMonthValue()))
+                .day(String.valueOf(now.getDayOfMonth()))
+                .price(String.valueOf(roomBoard.getPrice()))
+                .contractDeposit(String.valueOf(roomBoard.getContractDeposit()))
+                .contractFee(String.valueOf(roomBoard.getContractMonthlyFee()))
+                .roomBoard(roomBoard)
+                .build();
+
+        completeTransactionRepository.save(trans);
+
+        return true;
+    }
+
+    @Override
+    public Page<BoardListDTO> getMyBoardList(String userId, Pageable pageable) {
+
+        User contextUser = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
+        Page<RoomBoard> findBoards = roomBoardRepository.findByUser(contextUser, pageable);
+
+        return findBoards.map(RoomBoard::toListDTO);
     }
 
     private Page<BoardListDTO> findListAndSort(Pageable pageable, BigDecimal x, BigDecimal y, String range) {

@@ -5,11 +5,10 @@ import com.se.kumbangapiserver.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,7 +21,7 @@ public class FileController {
     @PostMapping("/api/file/upload")
     @ResponseBody
     public ResponseEntity<ResponseForm<Object>> uploadFile(List<MultipartFile> files) {
-
+        System.out.println(files);
         try {
             List<Long> fileIdList = fileService.saveFile(files);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(fileIdList)).build());

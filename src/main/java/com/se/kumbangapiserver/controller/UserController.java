@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +26,16 @@ public class UserController {
         try {
             List<BoardListDTO> wishList = userService.getWishList(userId);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(wishList)).build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
+        }
+    }
+
+    @GetMapping("/api/user/{userId}")
+    public ResponseEntity<ResponseForm<Object>> getUser(@PathVariable String userId) {
+
+        try {
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(userService.getUser(userId))).build());
         } catch (Exception e) {
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }

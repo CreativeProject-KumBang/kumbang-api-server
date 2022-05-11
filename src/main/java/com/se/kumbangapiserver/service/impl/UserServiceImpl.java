@@ -6,6 +6,7 @@ import com.se.kumbangapiserver.domain.board.WishListRepository;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.domain.user.UserRepository;
 import com.se.kumbangapiserver.dto.BoardListDTO;
+import com.se.kumbangapiserver.dto.UserDTO;
 import com.se.kumbangapiserver.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,4 +34,19 @@ public class UserServiceImpl implements UserService {
 
         return boardListDTOs;
     }
+
+    @Override
+    public UserDTO getUser(String userId) {
+        return userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다.")).toDTO();
+    }
+
+    @Override
+    public void updateUser(UserDTO user) {
+        User userContext = Common.getUserContext();
+        User persistedUser = userRepository.findById(userContext.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        persistedUser.setNewInfo(user);
+        userRepository.save(persistedUser);
+    }
+
+
 }

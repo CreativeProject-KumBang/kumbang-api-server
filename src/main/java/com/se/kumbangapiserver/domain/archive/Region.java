@@ -124,4 +124,8 @@ public class Region {
                 .price(this.avgPrice)
                 .build();
     }
+
+    public Long getId() {
+        return id;
+    }
 }

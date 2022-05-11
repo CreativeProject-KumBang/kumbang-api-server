@@ -7,6 +7,7 @@ import com.se.kumbangapiserver.domain.file.Files;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
+import com.se.kumbangapiserver.dto.CompleteDataDTO;
 import com.se.kumbangapiserver.dto.FilesDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -136,6 +137,38 @@ public class RoomBoard extends BaseTimeEntity {
 
     public Integer getPrice() {
         return price;
+    }
+
+    public BoardState getState() {
+        return state;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public Integer getContractDeposit() {
+        return contractDeposit;
+    }
+
+    public Integer getContractMonthlyFee() {
+        return contractMonthlyFee;
+    }
+
+    public void setCompleteData(CompleteDataDTO completeData) {
+        if (completeData.getPrice() != null) {
+            this.price = Integer.valueOf(completeData.getPrice());
+        }
+        if (completeData.getContractFee() != null) {
+            this.contractMonthlyFee = Integer.valueOf(completeData.getContractFee());
+        }
+        if (completeData.getContractDeposit() != null) {
+            this.contractDeposit = Integer.valueOf(completeData.getContractDeposit());
+        }
     }
 
     public void setState(BoardState state) {
@@ -269,6 +302,7 @@ public class RoomBoard extends BaseTimeEntity {
                 .removedAt(this.removedAt)
                 .distance(this.distance)
                 .region(this.region.toRegionDetailDTO())
+                .thumbnail(this.files.isEmpty() ? null : this.files.get(0).getFiles().toDTO())
                 .build();
     }
 

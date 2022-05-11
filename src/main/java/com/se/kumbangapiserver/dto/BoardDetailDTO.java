@@ -46,6 +46,8 @@ public class BoardDetailDTO {
     private String cordX;
     private String cordY;
 
+    private List<String> images;
+
     private RegionDetailDTO region;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
