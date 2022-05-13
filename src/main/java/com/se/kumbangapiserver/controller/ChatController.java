@@ -57,6 +57,8 @@ public class ChatController {
         chatService.appendChat(chatDataDTO);
 
         String url = "/user/" + chatDataDTO.getRoomId() + "/queue/messages";
+        String notify = "/user/" + chatDataDTO.getReceiver().getId() + "/queue/messages";
         simpMessage.convertAndSend(url, chatDataDTO);
+        simpMessage.convertAndSend(notify, chatDataDTO);
     }
 }

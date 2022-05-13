@@ -66,6 +66,9 @@ public class ChatServiceImpl implements ChatService {
         ChatData chatData = ChatData.fromDTO(chatDataDTO);
         ChatRoom chatRoom = chatRoomRepository.findById(chatDataDTO.getRoomId()).orElseThrow(() -> new RuntimeException("채팅방이 존재하지 않습니다."));
         chatData.setChatRoom(chatRoom);
+
+        chatData.setReadStatus(Boolean.FALSE);
+
         return chatDataRepository.save(chatData);
     }
 

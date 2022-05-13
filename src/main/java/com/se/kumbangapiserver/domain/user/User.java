@@ -61,7 +61,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     private List<String> roles = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<WishList> wishLists = new ArrayList<>();
+    private List<WishList> wishLists;
 
     public static User fromDTO(UserDTO user) {
         return User.builder()

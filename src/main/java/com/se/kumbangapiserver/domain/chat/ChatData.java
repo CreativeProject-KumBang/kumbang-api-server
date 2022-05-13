@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 
 @Table(name = "chat_data")
 @Entity
-@RequiredArgsConstructor
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,6 +38,16 @@ public class ChatData {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
+    @Column(name = "read_status")
+    private Boolean readStatus;
+
+    public void setReadStatus(Boolean readStatus) {
+        this.readStatus = readStatus;
+    }
+
+    public Boolean getReadStatus() {
+        return readStatus;
+    }
 
     @Column(name = "chat_data_created_at")
     private LocalDateTime createdAt;

@@ -44,6 +44,10 @@ public class ChatRoom extends BaseTimeEntity {
         return id;
     }
 
+    public User getBuyer() {
+        return buyer;
+    }
+
     public ChatRoomDTO toDTO() {
         return ChatRoomDTO.builder()
                 .chatRoomId(id)
