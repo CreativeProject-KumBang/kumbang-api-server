@@ -1,6 +1,7 @@
 package com.se.kumbangapiserver.dto;
 
 import com.se.kumbangapiserver.domain.board.BoardState;
+import com.se.kumbangapiserver.domain.board.DurationTerm;
 import com.se.kumbangapiserver.domain.board.PriceType;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class BoardListDTO {
     private Integer hitCount;
     private LocalDate durationStart;
     private LocalDate durationEnd;
+    private DurationTerm durationTerm;
     private String location;
     private String locationDetail;
     private Integer price;

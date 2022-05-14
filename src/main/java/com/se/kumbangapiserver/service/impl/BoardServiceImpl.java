@@ -16,6 +16,7 @@ import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.dto.CompleteDataDTO;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.type.DurationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -83,6 +86,17 @@ public class BoardServiceImpl implements BoardService {
                 }
         );
 
+        long between = ChronoUnit.DAYS.between(
+                boardDetailDTO.getDurationStart(),
+                boardDetailDTO.getDurationEnd());
+
+        if (between > 30) {
+            roomBoard.setDurationTerm(DurationTerm.LONG);
+        } else {
+            roomBoard.setDurationTerm(DurationTerm.SHORT);
+        }
+
+
         RoomBoard save = roomBoardRepository.save(roomBoard);
 
         return save.getId();
@@ -121,15 +135,7 @@ public class BoardServiceImpl implements BoardService {
 
         Page<BoardListDTO> boardList;
 
-        BigDecimal x = new BigDecimal(params.get("x"));
-        BigDecimal y = new BigDecimal(params.get("y"));
-
-        String range = "0.06";
-        if (Integer.parseInt(params.get("level")) < 3) {
-            range = "0.02";
-        }
-
-        boardList = findListAndSort(pageable, x, y, range);
+        boardList = findListAndSort(params, pageable);
 
         return boardList;
     }
@@ -219,31 +225,57 @@ public class BoardServiceImpl implements BoardService {
         return findBoards.map(RoomBoard::toListDTO);
     }
 
-    private Page<BoardListDTO> findListAndSort(Pageable pageable, BigDecimal x, BigDecimal y, String range) {
+    private Page<BoardListDTO> findListAndSort(Map<String, String> params, Pageable pageable) {
+
+        BigDecimal x = new BigDecimal(params.get("x"));
+        BigDecimal y = new BigDecimal(params.get("y"));
+
+        String range = "0.06";
+        if (Integer.parseInt(params.get("level")) < 3) {
+            range = "0.02";
+        }
 
         BigDecimal minX = x.subtract(new BigDecimal(range));
         BigDecimal maxX = x.add(new BigDecimal(range));
         BigDecimal minY = y.subtract(new BigDecimal(range));
         BigDecimal maxY = y.add(new BigDecimal(range));
 
-        Page<RoomBoard> boardList;
-        boardList = roomBoardRepository.findByCordXBetweenAndCordYBetween(
-                minX.toString(),
-                maxX.toString(),
-                minY.toString(),
-                maxY.toString(),
-                pageable
-        );
-        boardList.stream().forEach(board ->
+        List<RoomBoard> boardList;
+
+        RoomBoardSearchQuery queryParams = RoomBoardSearchQuery.builder()
+                .minCordX(String.valueOf(minX))
+                .maxCordX(String.valueOf(maxX))
+                .minCordY(String.valueOf(minY))
+                .maxCordY(String.valueOf(maxY))
+                .build();
+
+        if (params.containsKey("durationType")) {
+            queryParams.setDurationType(params.get("durationType"));
+        }
+        if (params.containsKey("durationStart")) {
+            queryParams.setDurationStart(LocalDate.parse(params.get("durationStart")));
+        }
+        if (params.containsKey("durationEnd")) {
+            queryParams.setDurationEnd(LocalDate.parse(params.get("durationEnd")));
+        }
+        if (params.containsKey("priceStart")) {
+            queryParams.setPriceStart(Integer.parseInt(params.get("priceStart")));
+        }
+        if (params.containsKey("priceEnd")) {
+            queryParams.setPriceEnd(Integer.parseInt(params.get("priceEnd")));
+        }
+
+
+        boardList = roomBoardRepository.findByDynamicQuery(queryParams);
+
+        boardList.forEach(board ->
                 board.setDistance(x, y)
         );
 
-        Page<BoardListDTO> boardListDTOPage = boardList.map(RoomBoard::toListDTO);
-        Stream<BoardListDTO> sorted = boardListDTOPage.stream().sorted(
-                Comparator.comparing(BoardListDTO::getDistance)
-        );
+        boardList.sort(Comparator.comparing(RoomBoard::getDistance));
+        List<BoardListDTO> dtoList = boardList.stream().map(RoomBoard::toListDTO).collect(Collectors.toList());
 
-        return new PageImpl<>(sorted.collect(Collectors.toList()), pageable, boardListDTOPage.getTotalElements());
+        return new PageImpl<>(dtoList, pageable, dtoList.size());
 
     }
 }

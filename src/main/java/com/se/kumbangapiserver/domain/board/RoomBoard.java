@@ -58,6 +58,10 @@ public class RoomBoard extends BaseTimeEntity {
     @Column(name = "duration_end")
     private LocalDate durationEnd;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "duration_term")
+    private DurationTerm durationTerm;
+
     @Column(name = "location")
     private String location;
 
@@ -199,6 +203,10 @@ public class RoomBoard extends BaseTimeEntity {
         this.cordY = cordY;
     }
 
+    public void setDurationTerm(DurationTerm durationTerm) {
+        this.durationTerm = durationTerm;
+    }
+
     public String getCordX() {
         return cordX;
     }
@@ -218,6 +226,7 @@ public class RoomBoard extends BaseTimeEntity {
                 .hitCount(boardDetailDTO.getHitCount())
                 .durationStart(boardDetailDTO.getDurationStart())
                 .durationEnd(boardDetailDTO.getDurationEnd())
+                .durationTerm(boardDetailDTO.getDurationTerm())
                 .location(boardDetailDTO.getLocation())
                 .locationDetail(boardDetailDTO.getLocationDetail())
                 .contractDeposit(boardDetailDTO.getContractDeposit())
@@ -251,6 +260,7 @@ public class RoomBoard extends BaseTimeEntity {
                 .hitCount(this.hitCount)
                 .durationStart(this.durationStart)
                 .durationEnd(this.durationEnd)
+                .durationTerm(this.durationTerm)
                 .location(this.location)
                 .locationDetail(this.locationDetail)
                 .contractDeposit(this.contractDeposit)
@@ -290,6 +300,7 @@ public class RoomBoard extends BaseTimeEntity {
                 .hitCount(this.hitCount)
                 .durationStart(this.durationStart)
                 .durationEnd(this.durationEnd)
+                .durationTerm(this.durationTerm)
                 .location(this.location)
                 .locationDetail(this.locationDetail)
                 .price(this.price)
@@ -312,6 +323,7 @@ public class RoomBoard extends BaseTimeEntity {
         }
         this.region = region;
     }
+
 
     public void setDistance(BigDecimal x, BigDecimal y) {
 

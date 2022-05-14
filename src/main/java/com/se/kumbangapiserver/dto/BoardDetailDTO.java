@@ -3,6 +3,7 @@ package com.se.kumbangapiserver.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.se.kumbangapiserver.domain.board.BoardState;
 import com.se.kumbangapiserver.domain.board.Details;
+import com.se.kumbangapiserver.domain.board.DurationTerm;
 import com.se.kumbangapiserver.domain.board.PriceType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,6 +34,8 @@ public class BoardDetailDTO {
     private LocalDate durationStart;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate durationEnd;
+
+    private DurationTerm durationTerm;
 
     private String location;
     private String locationDetail;

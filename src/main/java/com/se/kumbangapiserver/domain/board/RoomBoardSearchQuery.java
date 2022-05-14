@@ -1,21 +1,26 @@
 package com.se.kumbangapiserver.domain.board;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
+@Setter
+
 public class RoomBoardSearchQuery {
 
-    private String entx;
-    private String enty;
-    private String term;
-    private String priceStart;
-    private String priceEnd;
+    private String minCordX;
+    private String maxCordX;
+    private String minCordY;
+    private String maxCordY;
+    private String durationType;
+    private LocalDate durationStart;
+    private LocalDate durationEnd;
+    private Integer priceStart;
+    private Integer priceEnd;
     private String priceType;
-    private String mapScale;
 }
