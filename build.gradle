@@ -1,12 +1,21 @@
+buildscript {
+    dependencies {
+        classpath("gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:1.0.10")
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '2.6.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id "io.franzbecker.gradle-lombok" version "3.0.0"
 }
 
 group = 'com.se'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+
+apply plugin: "com.ewerk.gradle.plugins.querydsl"
 
 configurations {
     compileOnly {
@@ -31,12 +40,12 @@ dependencies {
     implementation 'org.webjars:stomp-websocket:2.3.4'
     implementation 'org.webjars:sockjs-client:1.5.1'
 
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
     // QueryDSL
-    implementation "com.querydsl:querydsl-jpa:5.0.0"
-    annotationProcessor(
-            "javax.persistence:javax.persistence-api",
-            "javax.annotation:javax.annotation-api",
-            "com.querydsl:querydsl-apt:5.0.0:jpa")
+    implementation 'com.querydsl:querydsl-jpa'
+    implementation 'com.querydsl:querydsl-apt'
+    // end QueryDSL
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -49,15 +58,30 @@ dependencies {
 
 }
 
-// QueryDSL
+// query dsl part
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    library = "com.querydsl:querydsl-apt"
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
 sourceSets {
     main {
         java {
-            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
+            srcDirs = ['src/main/java', querydslDir]
         }
     }
 }
 
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+// end query dsl
 
 tasks.named('test') {
     useJUnitPlatform()
