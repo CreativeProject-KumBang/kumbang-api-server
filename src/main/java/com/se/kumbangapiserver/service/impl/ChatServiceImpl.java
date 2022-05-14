@@ -71,6 +71,4 @@ public class ChatServiceImpl implements ChatService {
 
         return chatDataRepository.save(chatData);
     }
-
-
 }

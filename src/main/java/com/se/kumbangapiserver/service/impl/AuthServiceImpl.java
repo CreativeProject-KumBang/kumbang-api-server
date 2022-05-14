@@ -1,6 +1,7 @@
 package com.se.kumbangapiserver.service.impl;
 
 import com.se.kumbangapiserver.config.jwt.JwtTokenProvider;
+import com.se.kumbangapiserver.domain.common.MailAuthRepository;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.domain.user.UserRepository;
 import com.se.kumbangapiserver.dto.SignDTO;
@@ -8,6 +9,8 @@ import com.se.kumbangapiserver.dto.SignInDTO;
 import com.se.kumbangapiserver.dto.SignUpDTO;
 import com.se.kumbangapiserver.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,8 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final CustomUserDetailService customUserDetailService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JavaMailSender emailSender;
+    private final MailAuthRepository mailAuthRepository;
 
     @Override
     public SignDTO signUp(SignUpDTO signUpDTO) {
@@ -68,4 +73,26 @@ public class AuthServiceImpl implements AuthService {
         return signDTO;
 
     }
+
+    @Override
+    public Integer authEmailSend(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("noreply_kumbang@gmail.com");
+        message.setTo(email);
+        message.setSubject("[Kumbang] 이메일 인증");
+        Integer code = (int) (Math.random() * 1000000);
+        message.setText("인증번호는 " + code + " 입니다.");
+        emailSender.send(message);
+
+        mailAuthRepository.saveMailAndCode(email, code);
+
+        return code;
+    }
+
+    @Override
+    public Boolean authEmail(String email, Integer code) {
+        return mailAuthRepository.isValidCode(email, code);
+    }
+
+
 }
