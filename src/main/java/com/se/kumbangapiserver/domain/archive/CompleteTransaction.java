@@ -2,6 +2,7 @@ package com.se.kumbangapiserver.domain.archive;
 
 import com.se.kumbangapiserver.domain.board.RoomBoard;
 import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
+import com.se.kumbangapiserver.dto.TransactionDataDTO;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -49,4 +50,17 @@ public class CompleteTransaction extends BaseTimeEntity {
     @JoinColumn(name = "board_id")
     private RoomBoard roomBoard;
 
+    public TransactionDataDTO toDTO() {
+        return TransactionDataDTO.builder()
+                .id(id)
+                .address(address)
+                .region(region.toRegionDetailDTO())
+                .year(year)
+                .month(month)
+                .day(day)
+                .price(price)
+                .contractDeposit(contractDeposit)
+                .contractFee(contractFee)
+                .build();
+    }
 }
