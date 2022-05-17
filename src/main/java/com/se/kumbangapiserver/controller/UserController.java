@@ -2,6 +2,7 @@ package com.se.kumbangapiserver.controller;
 
 import com.se.kumbangapiserver.common.ResponseForm;
 import com.se.kumbangapiserver.dto.BoardListDTO;
+import com.se.kumbangapiserver.dto.UserDTO;
 import com.se.kumbangapiserver.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +32,22 @@ public class UserController {
         }
     }
 
-    @GetMapping("/api/user/{userId}")
+    @GetMapping("/api/mypage/{userId}")
     public ResponseEntity<ResponseForm<Object>> getUser(@PathVariable String userId) {
 
         try {
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(userService.getUser(userId))).build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
+        }
+    }
+
+    @PostMapping("/api/mypage/{userId}")
+    public ResponseEntity<ResponseForm<Object>> updateUser(@PathVariable String userId, UserDTO userDTO) {
+
+        try {
+            userService.updateUser(userDTO);
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList("success")).build());
         } catch (Exception e) {
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }

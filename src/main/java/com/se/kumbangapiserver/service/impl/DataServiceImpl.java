@@ -5,6 +5,8 @@ import com.se.kumbangapiserver.domain.archive.CompleteTransactionRepository;
 import com.se.kumbangapiserver.dto.TransactionDataDTO;
 import com.se.kumbangapiserver.service.DataService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,12 +18,11 @@ public class DataServiceImpl implements DataService {
 
     private final CompleteTransactionRepository transactionRepository;
 
-
     @Override
-    public List<TransactionDataDTO> getTransactionData(String transactionId) {
+    public Page<TransactionDataDTO> getUserTransactions(String userId, Pageable pageable) {
 
-        List<CompleteTransaction> findAddressData = transactionRepository.findAllByAddress(transactionId);
+        Page<CompleteTransaction> transactions = transactionRepository.findAllByUserId(Long.valueOf(userId), pageable);
 
-        return findAddressData.stream().map(CompleteTransaction::toDTO).collect(Collectors.toList());
+        return transactions.map(CompleteTransaction::toDTO);
     }
 }

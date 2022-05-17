@@ -76,16 +76,17 @@ public class BoardServiceImpl implements BoardService {
             r.addBoard(roomBoard);
         });
 
-        boardDetailDTO.getImages().forEach(i -> {
-                    Optional<Files> image = fileRepository.findById(Long.valueOf(i));
-                    if (image.isEmpty()) {
-                        return;
+        if (boardDetailDTO.getImages() != null) {
+            boardDetailDTO.getImages().forEach(i -> {
+                        Optional<Files> image = fileRepository.findById(Long.valueOf(i));
+                        if (image.isEmpty()) {
+                            return;
+                        }
+                        BoardFiles boardFiles = BoardFiles.makeRelation(roomBoard, image.get());
+                        boardFilesRepository.save(boardFiles);
                     }
-                    BoardFiles boardFiles = BoardFiles.makeRelation(roomBoard, image.get());
-                    boardFilesRepository.save(boardFiles);
-                }
-        );
-
+            );
+        }
         long between = ChronoUnit.DAYS.between(
                 boardDetailDTO.getDurationStart(),
                 boardDetailDTO.getDurationEnd());

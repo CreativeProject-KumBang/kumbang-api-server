@@ -11,6 +11,8 @@ public class TransactionDataDTO {
     private Long id;
     private String address;
     private RegionDetailDTO region;
+    private BoardDetailDTO board;
+    private UserDTO buyer;
     private String year;
     private String month;
     private String day;

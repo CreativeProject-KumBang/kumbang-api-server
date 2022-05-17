@@ -41,6 +41,7 @@ public class BoardController {
             Long board = boardService.createBoard(newBoard);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(board)).build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
@@ -127,15 +128,15 @@ public class BoardController {
         }
     }
 
-    @GetMapping("/api/user/{id}/board")
+    @GetMapping("/api/mypage/post/{id}")
     @ResponseBody
     public ResponseEntity<ResponseForm<Object>> getUserBoard(@PathVariable("id") String id, Pageable pageable) {
         try {
             Page<BoardListDTO> boardList = boardService.getMyBoardList(id, pageable);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(boardList)).build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
-
 }

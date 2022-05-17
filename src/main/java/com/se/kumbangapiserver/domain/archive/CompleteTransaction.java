@@ -2,6 +2,7 @@ package com.se.kumbangapiserver.domain.archive;
 
 import com.se.kumbangapiserver.domain.board.RoomBoard;
 import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
+import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.TransactionDataDTO;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,14 @@ public class CompleteTransaction extends BaseTimeEntity {
     @Column(name = "complete_transaction_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "room_board_id")
+    private RoomBoard roomBoard;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "buyer_id")
+    private User buyer;
 
     @Column(name = "tran_address")
     private String address;
@@ -46,9 +55,6 @@ public class CompleteTransaction extends BaseTimeEntity {
     @Column(name = "contract_fee")
     private String contractFee;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
-    private RoomBoard roomBoard;
 
     public TransactionDataDTO toDTO() {
         return TransactionDataDTO.builder()
@@ -56,6 +62,8 @@ public class CompleteTransaction extends BaseTimeEntity {
                 .address(address)
                 .region(region.toRegionDetailDTO())
                 .year(year)
+                .board(roomBoard.toDetailDTO())
+                .buyer(buyer.toDTO())
                 .month(month)
                 .day(day)
                 .price(price)

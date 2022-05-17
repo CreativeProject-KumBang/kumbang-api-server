@@ -104,7 +104,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     }
 
     public void setNewInfo(UserDTO user) {
-        this.name = user.getName();
+        this.nickname = user.getNickname();
+        this.phoneNumber = user.getPhoneNumber();
+        this.birthDate = user.getBirthDate();
         this.setUpdatedAt(LocalDateTime.now());
     }
 
