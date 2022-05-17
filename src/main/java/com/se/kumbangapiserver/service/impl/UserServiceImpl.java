@@ -24,7 +24,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<BoardListDTO> getWishList(String userId) {
 
-        User userContext = Common.getUserContext();
+//        User userContext = Common.getUserContext();
+        User userContext = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
         List<WishList> findWishList = wishListRepository.findAllByUser(userContext);
         List<BoardListDTO> boardListDTOs = new ArrayList<>();
         for (WishList wishList : findWishList) {

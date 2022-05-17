@@ -22,7 +22,7 @@ spring:
 
 external:
   jwt:
-    secret: bangkum@#!
+    secret: teamse-bangkum--kit-7540-20171181
   map:
     api:
       key: 46b3b45f86bcab6cf712624343656024

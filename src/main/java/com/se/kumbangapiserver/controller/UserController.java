@@ -28,6 +28,7 @@ public class UserController {
             List<BoardListDTO> wishList = userService.getWishList(userId);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(wishList)).build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
@@ -38,6 +39,7 @@ public class UserController {
         try {
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(userService.getUser(userId))).build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
