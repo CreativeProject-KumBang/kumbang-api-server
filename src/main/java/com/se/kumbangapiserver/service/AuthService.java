@@ -15,5 +15,5 @@ public interface AuthService {
 
     Boolean authEmail(String email, Integer code);
 
-    SignDTO reissueRefreshToken(Map<String, String> tokenMap);
+    SignDTO reissueRefreshToken(String refreshToken);
 }

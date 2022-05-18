@@ -1,11 +1,14 @@
 package com.se.kumbangapiserver.controller;
 
+import com.se.kumbangapiserver.common.Common;
 import com.se.kumbangapiserver.common.ResponseForm;
+import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.dto.CompleteDataDTO;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 
 public class BoardController {
 
@@ -128,11 +132,12 @@ public class BoardController {
         }
     }
 
-    @GetMapping("/api/mypage/post/{id}")
+    @GetMapping("/api/mypage/post")
     @ResponseBody
-    public ResponseEntity<ResponseForm<Object>> getUserBoard(@PathVariable("id") String id, Pageable pageable) {
+    public ResponseEntity<ResponseForm<Object>> getUserBoard(Pageable pageable) {
         try {
-            Page<BoardListDTO> boardList = boardService.getMyBoardList(id, pageable);
+            User userContext = Common.getUserContext();
+            Page<BoardListDTO> boardList = boardService.getMyBoardList(String.valueOf(userContext.getId()), pageable);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(boardList)).build());
         } catch (Exception e) {
             e.printStackTrace();

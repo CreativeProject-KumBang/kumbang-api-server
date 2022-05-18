@@ -9,8 +9,10 @@ import com.se.kumbangapiserver.dto.SignInDTO;
 import com.se.kumbangapiserver.dto.SignUpDTO;
 import com.se.kumbangapiserver.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Service
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -63,8 +66,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public SignDTO signIn(SignInDTO signInDTO) {
-        User result = (User) customUserDetailService.loadUserByUsername(signInDTO.getEmail());
+        User result = userRepository.findByEmail(signInDTO.getEmail()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
         SignDTO signDTO = new SignDTO();
         if (!passwordEncoder.matches(signInDTO.getPassword(), result.getPassword())) {
             signDTO.setResult("fail");
@@ -80,6 +84,7 @@ public class AuthServiceImpl implements AuthService {
         signDTO.setMessage("로그인 성공");
         signDTO.setAccessToken(jwtTokenProvider.createToken(String.valueOf(result.getId()), result.getRoles()));
         signDTO.setRefreshToken(refreshToken);
+
         return signDTO;
 
     }
@@ -109,16 +114,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public SignDTO reissueRefreshToken(Map<String, String> tokenMap) {
-        String userId = jwtTokenProvider.getUserPk(tokenMap.get("accessToken"));
-        String refreshToken = tokenMap.get("refreshToken");
-        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+    @Transactional
+    public SignDTO reissueRefreshToken(String refreshToken) {
+        User user = userRepository.findByRefreshToken(refreshToken).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 refreshToken입니다."));
         if (!user.getRefreshToken().equals(refreshToken)) {
             return new SignDTO("fail", "토큰이 일치하지 않습니다.", null, null);
         }
-        String newAccessToken = jwtTokenProvider.createToken(userId, user.getRoles());
+        String newAccessToken = jwtTokenProvider.createToken(String.valueOf(user.getId()), user.getRoles());
         String newRefreshToken = jwtTokenProvider.createRefreshToken();
         user.setRefreshToken(newRefreshToken);
+
         userRepository.save(user);
 
         return new SignDTO("success", "토큰 재발급 성공", newAccessToken, newRefreshToken);

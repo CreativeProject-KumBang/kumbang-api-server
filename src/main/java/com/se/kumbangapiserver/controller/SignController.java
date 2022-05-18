@@ -67,22 +67,14 @@ public class SignController {
 
     @GetMapping(value = "/api/auth/refreshtoken")
     @ResponseBody
-    public ResponseEntity<SignDTO> refreshToken(HttpRequest request) {
+    public ResponseEntity<SignDTO> refreshToken(@RequestHeader(value = "REFRESHTOKEN") String refreshToken) {
         try {
-            HttpHeaders headers = request.getHeaders();
-            List<String> refreshToken = headers.get("REFRESHTOKEN");
-            List<String> accessToken = headers.get("X-AUTH-TOKEN");
+            SignDTO signDTO = authservice.reissueRefreshToken(refreshToken);
+            return ResponseEntity.ok(signDTO);
 
-            Map<String, String> tokenMap = new HashMap<>();
-            if (refreshToken != null && accessToken != null) {
-                tokenMap.put("refreshToken", refreshToken.get(0));
-                tokenMap.put("accessToken", accessToken.get(0));
-                SignDTO signDTO = authservice.reissueRefreshToken(tokenMap);
-                return ResponseEntity.ok(signDTO);
-            }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(new SignDTO("fail", e.getMessage(), null, null));
         }
-        return ResponseEntity.ok(new SignDTO("fail", "잘못된 요청입니다.", null, null));
     }
 }

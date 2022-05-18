@@ -36,13 +36,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/api/docs/**");
+        web.ignoring().antMatchers("/image/**");
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
     private static final String[] PERMIT_URL_ARRAY = {
             /* sign in, sign up */
             "/api/member/signup",
-            "/api/auth/login"
+            "/api/auth/login",
+            "/api/auth/refreshtoken"
     };
 
     @Override // This method is used to configure the HTTP security
