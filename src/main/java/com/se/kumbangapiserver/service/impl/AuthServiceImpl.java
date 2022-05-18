@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -71,15 +72,24 @@ public class AuthServiceImpl implements AuthService {
             return signDTO;
         }
 
+        String refreshToken = jwtTokenProvider.createRefreshToken();
+        result.setRefreshToken(refreshToken);
+        userRepository.save(result);
+
         signDTO.setResult("success");
         signDTO.setMessage("로그인 성공");
-        signDTO.setToken(jwtTokenProvider.createToken(result.getEmail(), result.getRoles()));
+        signDTO.setAccessToken(jwtTokenProvider.createToken(String.valueOf(result.getId()), result.getRoles()));
+        signDTO.setRefreshToken(refreshToken);
         return signDTO;
 
     }
 
     @Override
     public Integer authEmailSend(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("noreply_kumbang@gmail.com");
         message.setTo(email);
@@ -98,5 +108,19 @@ public class AuthServiceImpl implements AuthService {
         return mailAuthRepository.isValidCode(email, code);
     }
 
+    @Override
+    public SignDTO reissueRefreshToken(Map<String, String> tokenMap) {
+        String userId = jwtTokenProvider.getUserPk(tokenMap.get("accessToken"));
+        String refreshToken = tokenMap.get("refreshToken");
+        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        if (!user.getRefreshToken().equals(refreshToken)) {
+            return new SignDTO("fail", "토큰이 일치하지 않습니다.", null, null);
+        }
+        String newAccessToken = jwtTokenProvider.createToken(userId, user.getRoles());
+        String newRefreshToken = jwtTokenProvider.createRefreshToken();
+        user.setRefreshToken(newRefreshToken);
+        userRepository.save(user);
 
+        return new SignDTO("success", "토큰 재발급 성공", newAccessToken, newRefreshToken);
+    }
 }

@@ -1,9 +1,7 @@
 package com.se.kumbangapiserver.config.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,7 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.security.auth.kerberos.EncryptionKey;
 import javax.servlet.http.HttpServletRequest;
+import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -25,12 +25,17 @@ public class JwtTokenProvider {
     private String secretKey;
 
     private final Long tokenExpirationTime = 1000L * 60 * 60;
+    private final Long refreshTokenExpirationTime = 1000L * 60 * 60 * 24;
 
     private final UserDetailsService userDetailsService;
 
     @PostConstruct
     protected void init() {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    }
+
+    private Key getSignKey() {
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     public String createToken(String userPk, List<String> roles) {
@@ -42,12 +47,22 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenExpirationTime))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(getSignKey())
+                .compact();
+    }
+
+    public String createRefreshToken() {
+        Date now = new Date();
+        return Jwts.builder()
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshTokenExpirationTime))
+                .signWith(getSignKey())
                 .compact();
     }
 
     public String getUserPk(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        JwtParser parser = Jwts.parserBuilder().setSigningKey(getSignKey()).build();
+        return parser.parseClaimsJws(token).getBody().getSubject();
     }
 
     public Authentication getAuthentication(String token) {
@@ -61,7 +76,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String jwtToken) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
             return false;

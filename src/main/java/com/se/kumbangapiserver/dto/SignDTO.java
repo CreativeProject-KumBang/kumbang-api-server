@@ -10,5 +10,6 @@ import lombok.*;
 public class SignDTO {
     private String result;
     private String message;
-    private String token;
+    private String accessToken;
+    private String refreshToken;
 }

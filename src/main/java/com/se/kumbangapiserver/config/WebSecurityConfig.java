@@ -42,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] PERMIT_URL_ARRAY = {
             /* sign in, sign up */
             "/api/member/signup",
-            "/api/member/signin"
+            "/api/auth/login"
     };
 
     @Override // This method is used to configure the HTTP security

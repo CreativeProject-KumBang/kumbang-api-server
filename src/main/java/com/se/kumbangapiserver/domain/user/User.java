@@ -56,6 +56,9 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(name = "removed_at")
     private LocalDateTime removedAt;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
@@ -161,5 +164,13 @@ public class User extends BaseTimeEntity implements UserDetails {
                 .updatedAt(this.getUpdatedAt())
                 .removedAt(this.removedAt)
                 .build();
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
     }
 }
