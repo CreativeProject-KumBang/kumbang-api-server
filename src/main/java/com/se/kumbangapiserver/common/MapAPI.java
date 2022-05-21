@@ -1,6 +1,7 @@
 package com.se.kumbangapiserver.common;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class MapAPI {
 
     @Value("${external.map.api.key}")
@@ -47,6 +49,7 @@ public class MapAPI {
                 + x
                 + "&y="
                 + y;
+        log.info("x: {} / y: {}", x, y);
 
         return getRegion(getJSONData(url));
     }

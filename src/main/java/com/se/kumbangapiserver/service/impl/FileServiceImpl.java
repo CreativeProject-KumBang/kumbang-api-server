@@ -2,6 +2,7 @@ package com.se.kumbangapiserver.service.impl;
 
 import com.se.kumbangapiserver.domain.file.Files;
 import com.se.kumbangapiserver.domain.file.FileRepository;
+import com.se.kumbangapiserver.dto.FilesDTO;
 import com.se.kumbangapiserver.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,8 +27,8 @@ public class FileServiceImpl implements FileService {
     private String filePath;
 
     @Override
-    public List<Long> saveFile(List<MultipartFile> files) {
-        List<Long> filePks = new ArrayList<>();
+    public List<FilesDTO> saveFile(List<MultipartFile> files) {
+        List<FilesDTO> filePks = new ArrayList<>();
         for (MultipartFile file : files) {
             try {
                 String fileId = UUID.randomUUID().toString();
@@ -55,7 +56,7 @@ public class FileServiceImpl implements FileService {
                         .build();
 
                 Files save = fileRepository.save(savedFile);
-                filePks.add(save.getId());
+                filePks.add(save.toDTO());
 
             } catch (IOException e) {
                 throw new RuntimeException(e);

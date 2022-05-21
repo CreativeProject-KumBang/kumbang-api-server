@@ -27,8 +27,8 @@ public class BoardListDTO {
     private Integer price;
     private Integer deposit;
     private PriceType priceType;
-    private String cordX;
-    private String cordY;
+    private String entx;
+    private String enty;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime removedAt;

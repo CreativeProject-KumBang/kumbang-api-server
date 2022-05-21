@@ -42,7 +42,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] PERMIT_URL_ARRAY = {
             /* sign in, sign up */
-            "/api/member/signup",
+            "/api/auth/signup",
+            "/api/board/list",
+            "/api/region/average",
+            "/api/auth/sendmail",
+            "/api/auth/authmail",
             "/api/auth/login",
             "/api/auth/refreshtoken"
     };

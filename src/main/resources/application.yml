@@ -9,16 +9,20 @@ spring:
       max-request-size: 20MB
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: yuukaisuu@gmail.com
-    password: nkasansrkkmetusp
+    host: mail.kumoh.ac.kr
+    username: youngbin1000@kumoh.ac.kr
+    password: gkdbflatkfkdgo!2
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+          timeout: 5000
+
+    default-encoding: utf-8
+    port: 25
+
 
 external:
   jwt:

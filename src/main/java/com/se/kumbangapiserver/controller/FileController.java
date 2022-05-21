@@ -1,6 +1,7 @@
 package com.se.kumbangapiserver.controller;
 
 import com.se.kumbangapiserver.common.ResponseForm;
+import com.se.kumbangapiserver.dto.FilesDTO;
 import com.se.kumbangapiserver.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class FileController {
     public ResponseEntity<ResponseForm<Object>> uploadFile(List<MultipartFile> files) {
         System.out.println(files);
         try {
-            List<Long> fileIdList = fileService.saveFile(files);
+            List<FilesDTO> fileIdList = fileService.saveFile(files);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(fileIdList)).build());
         } catch (Exception e) {
             e.printStackTrace();

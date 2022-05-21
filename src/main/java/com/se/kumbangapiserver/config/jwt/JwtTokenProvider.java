@@ -24,10 +24,8 @@ public class JwtTokenProvider {
     @Value("${external.jwt.secret}")
     private String secretKey;
 
-    private final Long tokenExpirationTime = 1000L * 60 * 60;
-    //    private final Long tokenExpirationTime = 1000L;
+    private final Long tokenExpirationTime = 1000L * 60 * 30;
     private final Long refreshTokenExpirationTime = 1000L * 60 * 60 * 24;
-//    private final Long refreshTokenExpirationTime = 1000L * 60 * 60;
 
     private final UserDetailsService userDetailsService;
 

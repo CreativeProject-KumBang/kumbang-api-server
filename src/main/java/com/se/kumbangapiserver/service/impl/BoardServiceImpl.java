@@ -60,6 +60,8 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public Long createBoard(BoardDetailDTO boardDetailDTO) {
+        boardDetailDTO.setUser(Common.getUserContext().toDTO());
+
         RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
 
         Map<String, String> data = mapAPI.AddressToCoordinate(boardDetailDTO.getLocation() + " " + boardDetailDTO.getLocationDetail());
@@ -75,14 +77,15 @@ public class BoardServiceImpl implements BoardService {
             roomBoard.setRegion(r);
             r.addBoard(roomBoard);
         });
-
-        if (boardDetailDTO.getImages() != null) {
-            boardDetailDTO.getImages().forEach(i -> {
-                        Optional<Files> image = fileRepository.findById(Long.valueOf(i));
+        List<BoardFiles> files = roomBoard.getBoardFiles();
+        if (boardDetailDTO.getFiles() != null) {
+            boardDetailDTO.getFiles().forEach(i -> {
+                        Optional<Files> image = fileRepository.findById(i.getId());
                         if (image.isEmpty()) {
                             return;
                         }
                         BoardFiles boardFiles = BoardFiles.makeRelation(roomBoard, image.get());
+                        files.add(boardFiles);
                         boardFilesRepository.save(boardFiles);
                     }
             );

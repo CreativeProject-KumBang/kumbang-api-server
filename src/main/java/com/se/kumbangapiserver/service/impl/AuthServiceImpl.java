@@ -49,16 +49,13 @@ public class AuthServiceImpl implements AuthService {
                 .email(signUpDTO.getEmail())
                 .name(signUpDTO.getName())
                 .nickname(signUpDTO.getNickname())
-                .phoneNumber(signUpDTO.getPhoneNumber())
-                .birthDate(signUpDTO.getBirthDate())
+                .phoneNumber(signUpDTO.getPhone())
                 .password(encodedPw)
                 .address(signUpDTO.getAddress())
                 .roles(List.of("ROLE_USER"))
                 .createdAt(now)
                 .updatedAt(now)
                 .build();
-
-
         userRepository.save(newUser);
         signDTO.setResult("success");
         signDTO.setMessage("회원가입 성공");
@@ -96,9 +93,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply_kumbang@gmail.com");
+        message.setFrom("noreply_kumbang@kumoh.ac.kr");
         message.setTo(email);
-        message.setSubject("[Kumbang] 이메일 인증");
+        message.setSubject("[Kumbang] 인증메일입니다.");
         Integer code = (int) (Math.random() * 1000000);
         message.setText("인증번호는 " + code + " 입니다.");
         emailSender.send(message);
@@ -116,6 +113,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public SignDTO reissueRefreshToken(String refreshToken) {
+        boolean b = jwtTokenProvider.validateToken(refreshToken);
+        if (!b) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
         User user = userRepository.findByRefreshToken(refreshToken).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 refreshToken입니다."));
         if (!user.getRefreshToken().equals(refreshToken)) {
             return new SignDTO("fail", "토큰이 일치하지 않습니다.", null, null);

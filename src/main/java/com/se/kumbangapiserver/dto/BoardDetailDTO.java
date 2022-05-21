@@ -42,14 +42,11 @@ public class BoardDetailDTO {
     private Integer contractDeposit;
     private Integer contractMonthlyFee;
     private Integer price;
-    private PriceType priceType;
     private Integer deposit;
-    private String fixedOption;
+    private List<String> fixedOption;
     private String additionalOption;
     private String cordX;
     private String cordY;
-
-    private List<String> images;
 
     private RegionDetailDTO region;
 
@@ -67,5 +64,9 @@ public class BoardDetailDTO {
 
     public void setFiles(List<FilesDTO> files) {
         this.files = files;
+    }
+
+    public void setUser(UserDTO user) {
+        this.user = user;
     }
 }

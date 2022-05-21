@@ -41,7 +41,7 @@ public class BoardController {
     @ResponseBody
     public ResponseEntity<ResponseForm<Object>> createBoard(@RequestBody BoardDetailDTO newBoard) {
         try {
-            System.out.println("newBoard = " + newBoard.toString());
+            log.info("createBoard : {}", newBoard);
             Long board = boardService.createBoard(newBoard);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(board)).build());
         } catch (Exception e) {

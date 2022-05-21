@@ -198,6 +198,10 @@ public class RoomBoard extends BaseTimeEntity {
         setUpdatedAt(now);
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public void setCoordinate(String cordX, String cordY) {
         this.cordX = cordX;
         this.cordY = cordY;
@@ -217,6 +221,14 @@ public class RoomBoard extends BaseTimeEntity {
 
     public static RoomBoard createEntityFromDTO(BoardDetailDTO boardDetailDTO) {
 
+
+        StringBuilder fixedOptions = new StringBuilder();
+        for (String option : boardDetailDTO.getFixedOption()) {
+            fixedOptions.append(option).append(",");
+        }
+        String fixedOptionString = fixedOptions.deleteCharAt(fixedOptions.length() - 1).toString();
+
+
         RoomBoard roomBoard = RoomBoard.builder()
                 .id(boardDetailDTO.getBoardId())
                 .title(boardDetailDTO.getTitle())
@@ -232,24 +244,21 @@ public class RoomBoard extends BaseTimeEntity {
                 .contractDeposit(boardDetailDTO.getContractDeposit())
                 .contractMonthlyFee(boardDetailDTO.getContractMonthlyFee())
                 .price(boardDetailDTO.getPrice())
-                .priceType(boardDetailDTO.getPriceType())
+                .priceType(PriceType.DAILY)
                 .deposit(boardDetailDTO.getDeposit())
-                .fixedOption(boardDetailDTO.getFixedOption())
+                .fixedOption(fixedOptionString)
                 .additionalOption(boardDetailDTO.getAdditionalOption())
                 .details(boardDetailDTO.getDetails())
+                .files(new ArrayList<>())
                 .build();
 
-        if (boardDetailDTO.getFiles() != null) {
-            List<BoardFiles> boardFiles = roomBoard.getBoardFiles();
-            for (FilesDTO filesDTO : boardDetailDTO.getFiles()) {
-                boardFiles.add(BoardFiles.makeRelation(roomBoard, Files.fromDTO(filesDTO)));
-            }
-        }
 
         return roomBoard;
     }
 
     public BoardDetailDTO toDetailDTO() {
+
+        List<String> fixedOption = new ArrayList<>(List.of(this.fixedOption.split(",")));
 
         BoardDetailDTO boardDetailDTO = BoardDetailDTO.builder()
                 .boardId(this.id)
@@ -266,9 +275,8 @@ public class RoomBoard extends BaseTimeEntity {
                 .contractDeposit(this.contractDeposit)
                 .contractMonthlyFee(this.contractMonthlyFee)
                 .price(this.price)
-                .priceType(this.priceType)
                 .deposit(this.deposit)
-                .fixedOption(this.fixedOption)
+                .fixedOption(fixedOption)
                 .additionalOption(this.additionalOption)
                 .region(this.region.toRegionDetailDTO())
                 .cordX(this.cordX)
@@ -306,8 +314,8 @@ public class RoomBoard extends BaseTimeEntity {
                 .price(this.price)
                 .priceType(this.priceType)
                 .deposit(this.deposit)
-                .cordX(this.cordX)
-                .cordY(this.cordY)
+                .entx(this.cordX)
+                .enty(this.cordY)
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .removedAt(this.removedAt)

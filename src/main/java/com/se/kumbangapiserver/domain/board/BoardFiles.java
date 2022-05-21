@@ -39,16 +39,16 @@ public class BoardFiles {
     }
 
     private void setFiles(Files files) {
-        this.files = files;
-        if (files != null) {
-            files.getBoardFiles().add(this);
+        if (this.files != null) {
+            this.files.getBoardFiles().remove(this);
         }
+        this.files = files;
     }
 
     private void setRoomBoard(RoomBoard roomBoard) {
-        this.roomBoard = roomBoard;
-        if (roomBoard != null) {
-            roomBoard.getBoardFiles().add(this);
+        if (this.roomBoard != null) {
+            this.roomBoard.getBoardFiles().remove(this);
         }
+        this.roomBoard = roomBoard;
     }
 }

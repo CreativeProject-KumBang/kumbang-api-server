@@ -50,9 +50,6 @@ public class User extends BaseTimeEntity implements UserDetails {
     @Column(nullable = true)
     private String address;
 
-    @Column(nullable = true)
-    private String birthDate;
-
     @Column(name = "removed_at")
     private LocalDateTime removedAt;
 
@@ -73,7 +70,6 @@ public class User extends BaseTimeEntity implements UserDetails {
                 .password(user.getPassword())
                 .nickname(user.getNickname())
                 .phoneNumber(user.getPhoneNumber())
-                .birthDate(user.getBirthDate())
                 .name(user.getName())
                 .removedAt(user.getRemovedAt())
                 .roles(user.getRole())
@@ -109,7 +105,6 @@ public class User extends BaseTimeEntity implements UserDetails {
     public void setNewInfo(UserDTO user) {
         this.nickname = user.getNickname();
         this.phoneNumber = user.getPhoneNumber();
-        this.birthDate = user.getBirthDate();
         this.setUpdatedAt(LocalDateTime.now());
     }
 
@@ -157,7 +152,6 @@ public class User extends BaseTimeEntity implements UserDetails {
                 .name(this.name)
                 .nickname(this.nickname)
                 .phoneNumber(this.phoneNumber)
-                .birthDate(this.birthDate)
                 .removedAt(this.removedAt)
                 .role(this.roles)
                 .createdAt(this.getCreatedAt())
