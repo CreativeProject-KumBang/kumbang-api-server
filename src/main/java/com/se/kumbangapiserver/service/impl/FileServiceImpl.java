@@ -5,6 +5,7 @@ import com.se.kumbangapiserver.domain.file.FileRepository;
 import com.se.kumbangapiserver.dto.FilesDTO;
 import com.se.kumbangapiserver.service.FileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
@@ -27,6 +29,7 @@ public class FileServiceImpl implements FileService {
     private String filePath;
 
     @Override
+    @Transactional
     public List<FilesDTO> saveFile(List<MultipartFile> files) {
         List<FilesDTO> filePks = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -39,6 +42,7 @@ public class FileServiceImpl implements FileService {
                 String dbPath = "/image/" + fileId + "." + fileExtension;
 
                 File newFile = new File(filePath, fileId + "." + fileExtension);
+                log.info("File path: " + newFile.getAbsolutePath());
                 if (!newFile.exists()) {
                     boolean mkdirs = newFile.mkdirs();
                     if (!mkdirs) {
@@ -66,18 +70,16 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void deleteFile(List<Long> fileIds) {
-        for (Long fileId : fileIds) {
-            Files file = fileRepository.findById(fileId).orElseThrow(() -> new RuntimeException("File not found."));
-            File fileToDelete = new File(file.getPath());
-            if (fileToDelete.exists()) {
-                boolean delete = fileToDelete.delete();
-                if (!delete) {
-                    throw new RuntimeException("Failed to delete file.");
-                }
+    @Transactional
+    public void deleteFile(String fileId) {
+        Files file = fileRepository.findById(Long.valueOf(fileId)).orElseThrow(() -> new RuntimeException("File not found."));
+        File fileToDelete = new File(file.getPath());
+        if (fileToDelete.exists()) {
+            boolean delete = fileToDelete.delete();
+            if (!delete) {
+                throw new RuntimeException("Failed to delete file.");
             }
-            fileRepository.delete(file);
         }
+        fileRepository.delete(file);
     }
-
 }

@@ -17,5 +17,4 @@ public class ChatDataDTO {
     private String content;
     private LocalDateTime createdAt;
     private UserDTO sender;
-    private UserDTO receiver;
 }

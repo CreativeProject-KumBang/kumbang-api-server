@@ -31,10 +31,7 @@ external:
     api:
       key: 46b3b45f86bcab6cf712624343656024
 
-  static:
-    url:
-      outbound: /image/**
-      inbound: /Users/lichee55/tmp/uploads/
+
 
 
 
@@ -59,6 +56,12 @@ spring:
         show_sql: true
         format_sql: true
 
+external:
+  static:
+    url:
+      outbound: /image/**
+      inbound: /Users/lichee55/tmp/uploads
+
 ---
 
 spring:
@@ -67,9 +70,15 @@ spring:
       on-profile: prod
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://
-    username: sa
-    password: sa
+    url: jdbc:mariadb://172.17.0.3:3306/kumbangapi
+    username: kumbangadmin
+    password: se75407540
   jpa:
     hibernate:
       ddl-auto: validate
+
+external:
+  static:
+    url:
+      outbound: /image/**
+      inbound: /uploads/

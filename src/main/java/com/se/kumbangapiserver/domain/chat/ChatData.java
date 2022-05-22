@@ -31,10 +31,6 @@ public class ChatData {
     private User sender;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_user_id")
-    private User receiver;
-
-    @ManyToOne
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
@@ -52,6 +48,14 @@ public class ChatData {
     @Column(name = "chat_data_created_at")
     private LocalDateTime createdAt;
 
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public User getSender() {
+        return sender;
+    }
+
     public void setChatRoom(ChatRoom chatRoom) {
         this.chatRoom = chatRoom;
     }
@@ -65,7 +69,6 @@ public class ChatData {
                 .id(id)
                 .roomId(chatRoom.getId())
                 .sender(sender.toDTO())
-                .receiver(receiver.toDTO())
                 .content(content)
                 .createdAt(createdAt)
                 .build();
@@ -77,8 +80,6 @@ public class ChatData {
                 .id(chatDataDTO.getId())
                 .content(chatDataDTO.getContent())
                 .sender(User.fromDTO(chatDataDTO.getSender()))
-                .receiver(User.fromDTO(chatDataDTO.getReceiver()))
-                .createdAt(chatDataDTO.getCreatedAt())
                 .build();
     }
 }

@@ -9,6 +9,6 @@ public interface FileService {
 
     List<FilesDTO> saveFile(List<MultipartFile> files);
 
-    void deleteFile(List<Long> fileIds);
+    void deleteFile(String fileId);
 
 }

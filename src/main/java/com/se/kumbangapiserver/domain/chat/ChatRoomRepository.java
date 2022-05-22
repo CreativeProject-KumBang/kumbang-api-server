@@ -12,8 +12,7 @@ import java.util.UUID;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
-    Optional<ChatRoom> findByRoomBoardAndBuyer(RoomBoard roomBoard, User buyer);
 
-    Page<ChatRoom> findByRoomBoard(RoomBoard roomBoard, Pageable pageable);
+    Page<ChatRoom> findAllByBuyerOrRoomBoard_User(User buyer, User seller, Pageable pageable);
 
 }

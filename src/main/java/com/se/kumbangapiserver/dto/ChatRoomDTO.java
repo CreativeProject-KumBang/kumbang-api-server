@@ -18,10 +18,11 @@ public class ChatRoomDTO {
 
     private Long chatRoomId;
     private UUID chatRoomName;
-    private BoardDetailDTO roomBoard;
+    private BoardListDTO roomBoard;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime removedAt;
     private UserDTO buyer;
     private String lastMessage;
+    private Boolean isBuyer;
 }
