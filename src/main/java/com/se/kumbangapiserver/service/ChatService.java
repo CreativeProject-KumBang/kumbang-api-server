@@ -2,6 +2,7 @@ package com.se.kumbangapiserver.service;
 
 import com.se.kumbangapiserver.dto.ChatDataDTO;
 import com.se.kumbangapiserver.dto.ChatRoomDTO;
+import com.se.kumbangapiserver.dto.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

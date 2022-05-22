@@ -25,11 +25,12 @@ public class WebsocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/user");
 
         // for publish prefix
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.setApplicationDestinationPrefixes("/broadcast");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/broadcast").withSockJS().setHeartbeatTime(1000 * 60);
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS().setHeartbeatTime(30000);
     }
+
 }

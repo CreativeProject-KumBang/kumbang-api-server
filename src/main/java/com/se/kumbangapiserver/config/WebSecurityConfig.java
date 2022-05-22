@@ -48,7 +48,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/auth/sendmail",
             "/api/auth/authmail",
             "/api/auth/login",
-            "/api/auth/refreshtoken"
+            "/api/auth/refreshtoken",
+            "/ws/**"
     };
 
     @Override // This method is used to configure the HTTP security
@@ -73,7 +74,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOrigin("*");
+        configuration.addAllowedOriginPattern("*");
+        configuration.setAllowCredentials(true);
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 

@@ -7,6 +7,7 @@ import com.se.kumbangapiserver.dto.ChatDataDTO;
 import com.se.kumbangapiserver.dto.ChatRoomDTO;
 import com.se.kumbangapiserver.service.ChatService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +23,21 @@ import java.util.Collections;
 import java.util.List;
 
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 public class ChatController {
 
     private final ChatService chatService;
     private final SimpMessagingTemplate simpMessage;
+
+    @GetMapping("/api/whoami")
+    public ResponseEntity<ResponseForm<Object>> whoAmI() {
+        try {
+            return ResponseEntity.ok(ResponseForm.builder().status(true).response(Collections.singletonList(Common.getUserContext().toDTO())).build());
+        } catch (Exception e) {
+            return ResponseEntity.ok(ResponseForm.builder().status(false).response(Collections.singletonList("fail")).build());
+        }
+    }
 
     @PostMapping("/api/chat/{boardId}")
     public ResponseEntity<ResponseForm<Object>> makeChatRoom(@PathVariable String boardId) {
@@ -60,18 +71,27 @@ public class ChatController {
         }
     }
 
-    @MessageMapping("/api/broadcast")
+    @MessageMapping("/publish")
     public void send(ChatDataDTO chatDataDTO) {
-        LocalDateTime now = LocalDateTime.now();
-        chatDataDTO.setCreatedAt(now);
-        chatService.appendChat(chatDataDTO);
+        try {
+            log.info("send message : {}", chatDataDTO.toString());
+            LocalDateTime now = LocalDateTime.now();
+            chatDataDTO.setCreatedAt(now);
+            chatService.appendChat(chatDataDTO);
 
-        String url = "/user/" + chatDataDTO.getRoomId() + "/queue/messages";
-        simpMessage.convertAndSend(url, chatDataDTO);
+            String url = "/user/" + chatDataDTO.getRoomId() + "/queue/messages";
+            simpMessage.convertAndSend(url, chatDataDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @GetMapping("/api/chat/{messageId}")
     public void readChat(@PathVariable String messageId) {
-        chatService.readChat(Long.valueOf(messageId));
+        try {
+            chatService.readChat(Long.valueOf(messageId));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
