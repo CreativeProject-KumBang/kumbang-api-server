@@ -22,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -40,6 +42,11 @@ public class ChatServiceImpl implements ChatService {
     public Long makeChatRoom(Long boardId) {
         User contextUser = userRepository.findById(Common.getUserContext().getId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
         RoomBoard contextBoard = roomBoardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
+
+        Optional<ChatRoom> findRoomBoard = chatRoomRepository.findByBuyerAndRoomBoard(contextUser, contextBoard);
+        if (findRoomBoard.isPresent()) {
+            return findRoomBoard.get().getId();
+        }
 
         LocalDateTime now = LocalDateTime.now();
         ChatRoom newChatRoom = ChatRoom.builder()

@@ -16,6 +16,7 @@ import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.dto.CompleteDataDTO;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.type.DurationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,6 +34,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class BoardServiceImpl implements BoardService {
 
@@ -64,7 +66,7 @@ public class BoardServiceImpl implements BoardService {
 
         RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
 
-        Map<String, String> data = mapAPI.AddressToCoordinate(boardDetailDTO.getLocation() + " " + boardDetailDTO.getLocationDetail());
+        Map<String, String> data = mapAPI.AddressToCoordinate(boardDetailDTO.getLocation());
 
         roomBoard.setNewBoard(data);
         Map<String, String> region = mapAPI.CoordinateToRegion(roomBoard.getCordX(), roomBoard.getCordY());

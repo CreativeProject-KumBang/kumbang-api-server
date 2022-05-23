@@ -16,6 +16,7 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -186,11 +187,11 @@ public class RoomBoard extends BaseTimeEntity {
         this.cordY = "0";
 
         if (data.containsKey("road_address")) {
-            this.cordX = data.get("road_address_x");
-            this.cordY = data.get("road_address_y");
+            this.cordX = new BigDecimal(data.get("road_address_x")).setScale(10, RoundingMode.HALF_UP).toString();
+            this.cordY = new BigDecimal(data.get("road_address_y")).setScale(10, RoundingMode.HALF_UP).toString();
         } else if (data.containsKey("address")) {
-            this.cordX = data.get("address_x");
-            this.cordY = data.get("address_y");
+            this.cordX = new BigDecimal(data.get("address_x")).setScale(10, RoundingMode.HALF_UP).toString();
+            this.cordY = new BigDecimal(data.get("address_y")).setScale(10, RoundingMode.HALF_UP).toString();
         }
 
         LocalDateTime now = LocalDateTime.now();

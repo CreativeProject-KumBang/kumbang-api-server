@@ -5,15 +5,18 @@ import com.se.kumbangapiserver.dto.RegionDetailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 @Builder
 @Table(name = "region")
 public class Region {
@@ -31,26 +34,26 @@ public class Region {
 
     @Column(name = "town") // 읍면동
     private String town;
-    @Column(name = "total_entx") // 경도
-    private String entx;
+    @Column(name = "total_entx", scale = 10, precision = 14) // 경도
+    private BigDecimal entx;
 
-    @Column(name = "total_enty") // 위도
-    private String enty;
+    @Column(name = "total_enty", scale = 10, precision = 14) // 위도
+    private BigDecimal enty;
 
-    @Column(name = "avg_entx") // 평균경도
-    private String avgEntx;
+    @Column(name = "avg_entx", scale = 10, precision = 14) // 평균경도
+    private BigDecimal avgEntx;
 
-    @Column(name = "avg_enty") // 평균위도
-    private String avgEnty;
+    @Column(name = "avg_enty", scale = 10, precision = 14) // 평균위도
+    private BigDecimal avgEnty;
 
     @Column(name = "quantity") // 매물 수량
     private Integer quantity;
 
-    @Column(name = "open_board_total_price") // 매물 총가격
-    private String totalPrice;
+    @Column(name = "open_board_total_price", precision = 20, scale = 2) // 매물 총가격
+    private BigDecimal totalPrice;
 
-    @Column(name = "open_board_avg_price") // 매물 평균가격
-    private String avgPrice;
+    @Column(name = "open_board_avg_price", precision = 20, scale = 2) // 매물 평균가격
+    private BigDecimal avgPrice;
 
     @OneToMany(mappedBy = "region", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<RoomBoard> roomBoardList;
@@ -60,9 +63,9 @@ public class Region {
     }
 
     public void addBoard(RoomBoard roomBoard) {
-        BigDecimal x = new BigDecimal(this.entx);
-        BigDecimal y = new BigDecimal(this.enty);
-        BigDecimal total = new BigDecimal(this.totalPrice);
+        BigDecimal x = this.entx;
+        BigDecimal y = this.enty;
+        BigDecimal total = this.totalPrice;
         BigDecimal quantity = new BigDecimal(this.quantity);
 
         x = x.add(new BigDecimal(roomBoard.getCordX()));
@@ -70,20 +73,20 @@ public class Region {
         total = total.add(new BigDecimal(roomBoard.getPrice()));
         quantity = quantity.add(BigDecimal.ONE);
 
-        this.avgEntx = String.valueOf(x.divide(quantity, 10, RoundingMode.HALF_UP));
-        this.avgEnty = String.valueOf(y.divide(quantity, 10, RoundingMode.HALF_UP));
-        this.avgPrice = String.valueOf(total.divide(quantity, 2, RoundingMode.HALF_UP));
+        this.avgEntx = x.divide(quantity, 10, RoundingMode.HALF_UP);
+        this.avgEnty = y.divide(quantity, 10, RoundingMode.HALF_UP);
+        this.avgPrice = total.divide(quantity, 2, RoundingMode.HALF_UP);
 
-        this.entx = x.toString();
-        this.enty = y.toString();
-        this.totalPrice = total.toString();
+        this.entx = x.setScale(10, RoundingMode.HALF_UP);
+        this.enty = y.setScale(10, RoundingMode.HALF_UP);
+        this.totalPrice = total.setScale(2, RoundingMode.HALF_UP);
         this.quantity = quantity.intValue();
     }
 
     public void removeBoard(RoomBoard roomBoard) {
-        BigDecimal x = new BigDecimal(this.entx);
-        BigDecimal y = new BigDecimal(this.enty);
-        BigDecimal total = new BigDecimal(this.totalPrice);
+        BigDecimal x = this.entx;
+        BigDecimal y = this.enty;
+        BigDecimal total = this.totalPrice;
         BigDecimal quantity = new BigDecimal(this.quantity);
 
         x = x.subtract(new BigDecimal(roomBoard.getCordX()));
@@ -91,13 +94,13 @@ public class Region {
         total = total.subtract(new BigDecimal(roomBoard.getPrice()));
         quantity = quantity.subtract(BigDecimal.ONE);
 
-        this.avgEntx = String.valueOf(x.divide(quantity, 10, RoundingMode.HALF_UP));
-        this.avgEnty = String.valueOf(y.divide(quantity, 10, RoundingMode.HALF_UP));
-        this.avgPrice = String.valueOf(total.divide(quantity, 2, RoundingMode.HALF_UP));
+        this.avgEntx = x.divide(quantity, 10, RoundingMode.HALF_UP);
+        this.avgEnty = y.divide(quantity, 10, RoundingMode.HALF_UP);
+        this.avgPrice = total.divide(quantity, 2, RoundingMode.HALF_UP);
 
-        this.entx = x.toString();
-        this.enty = y.toString();
-        this.totalPrice = total.toString();
+        this.entx = x.setScale(10, RoundingMode.HALF_UP);
+        this.enty = y.setScale(10, RoundingMode.HALF_UP);
+        this.totalPrice = total.setScale(2, RoundingMode.HALF_UP);
         this.quantity = quantity.intValue();
     }
 
@@ -127,5 +130,13 @@ public class Region {
 
     public Long getId() {
         return id;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String getCity() {
+        return city;
     }
 }

@@ -58,7 +58,7 @@ external:
   static:
     url:
       outbound: /image/**
-      inbound: /Users/lichee55/tmp/uploads
+      inbound: /Users/lichee55/tmp/uploads/
 
 ---
 
