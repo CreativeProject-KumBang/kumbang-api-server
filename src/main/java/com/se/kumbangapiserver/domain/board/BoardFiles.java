@@ -47,7 +47,7 @@ public class BoardFiles {
 
     private void setRoomBoard(RoomBoard roomBoard) {
         if (this.roomBoard != null) {
-            this.roomBoard.getBoardFiles().remove(this);
+            this.roomBoard.getFiles().remove(this);
         }
         this.roomBoard = roomBoard;
     }

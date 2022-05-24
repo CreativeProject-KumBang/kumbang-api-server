@@ -7,7 +7,6 @@ import com.se.kumbangapiserver.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -166,5 +165,13 @@ public class User extends BaseTimeEntity implements UserDetails {
 
     public String getRefreshToken() {
         return refreshToken;
+    }
+
+    public void setDeletedAt(LocalDateTime now) {
+        this.removedAt = now;
+    }
+
+    public boolean getRemovedAt() {
+        return this.removedAt != null;
     }
 }

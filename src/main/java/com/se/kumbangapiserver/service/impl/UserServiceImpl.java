@@ -10,7 +10,9 @@ import com.se.kumbangapiserver.dto.UserDTO;
 import com.se.kumbangapiserver.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +49,14 @@ public class UserServiceImpl implements UserService {
         User persistedUser = userRepository.findById(userContext.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
         persistedUser.setNewInfo(user);
         userRepository.save(persistedUser);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser() {
+        User contextUser = Common.getUserContext();
+        User user = userRepository.findById(contextUser.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        user.setDeletedAt(LocalDateTime.now());
     }
 
 

@@ -67,6 +67,11 @@ public class AuthServiceImpl implements AuthService {
     public SignDTO signIn(SignInDTO signInDTO) {
         User result = userRepository.findByEmail(signInDTO.getEmail()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
         SignDTO signDTO = new SignDTO();
+        if (result.getRemovedAt()) {
+            signDTO.setResult("fail");
+            signDTO.setMessage("탈퇴한 회원입니다.");
+            return signDTO;
+        }
         if (!passwordEncoder.matches(signInDTO.getPassword(), result.getPassword())) {
             signDTO.setResult("fail");
             signDTO.setMessage("아이디 혹은 비밀번호가 일치하지 않습니다.");
