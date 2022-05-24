@@ -49,11 +49,20 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:tcp://localhost/~/test
-    username: sa
-    password:
+
+        datasource:
+          driver-class-name: org.h2.Driver
+          url: jdbc:h2:tcp://localhost/~/test
+          username: sa
+          password:
+
+#  datasource:
+#    driver-class-name: org.mariadb.jdbc.Driver
+#    url: jdbc:mariadb://192.158.0.43:3306/kumbangapi
+#    username: kumbangadmin
+#    password: se75407540
+
+
 external:
   static:
     url:

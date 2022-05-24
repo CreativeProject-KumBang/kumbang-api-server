@@ -3,6 +3,8 @@ package com.se.kumbangapiserver.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
 @Builder
 public class CompleteDataDTO {
@@ -10,10 +12,8 @@ public class CompleteDataDTO {
     private String contractFee;
     private String contractDeposit;
     private String price;
-    private String year;
-    private String month;
-    private String day;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private RegionDetailDTO region;
     private String address;
-
 }

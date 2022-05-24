@@ -14,9 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -31,6 +29,7 @@ public class ChatController {
     private final SimpMessagingTemplate simpMessage;
 
     @GetMapping("/api/whoami")
+    @ResponseBody
     public ResponseEntity<ResponseForm<Object>> whoAmI() {
         try {
             return ResponseEntity.ok(ResponseForm.builder().status(true).response(Collections.singletonList(Common.getUserContext().toDTO())).build());
@@ -86,8 +85,9 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/api/chat/{messageId}")
-    public void readChat(@PathVariable String messageId) {
+    @GetMapping("/api/chat/read")
+    @ResponseBody
+    public void readChat(@RequestBody String messageId) {
         try {
             chatService.readChat(Long.valueOf(messageId));
         } catch (Exception e) {

@@ -11,6 +11,7 @@ import com.se.kumbangapiserver.dto.CompleteDataDTO;
 import com.se.kumbangapiserver.dto.FilesDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -26,6 +27,7 @@ import java.util.Map;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 @SuperBuilder
 @Table(name = "room_board")
 public class RoomBoard extends BaseTimeEntity {
@@ -120,48 +122,12 @@ public class RoomBoard extends BaseTimeEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<WishList> wishList;
 
-    public List<BoardFiles> getBoardFiles() {
-        return files;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
     public void changeState(BoardState state) {
         this.state = state;
     }
 
     public void setRemoved() {
         this.removedAt = LocalDateTime.now();
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public BoardState getState() {
-        return state;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public Region getRegion() {
-        return region;
-    }
-
-    public Integer getContractDeposit() {
-        return contractDeposit;
-    }
-
-    public Integer getContractMonthlyFee() {
-        return contractMonthlyFee;
     }
 
     public void setCompleteData(CompleteDataDTO completeData) {
@@ -210,14 +176,6 @@ public class RoomBoard extends BaseTimeEntity {
 
     public void setDurationTerm(DurationTerm durationTerm) {
         this.durationTerm = durationTerm;
-    }
-
-    public String getCordX() {
-        return cordX;
-    }
-
-    public String getCordY() {
-        return cordY;
     }
 
     public static RoomBoard createEntityFromDTO(BoardDetailDTO boardDetailDTO) {
@@ -339,9 +297,5 @@ public class RoomBoard extends BaseTimeEntity {
         BigDecimal xDiff = x.subtract(new BigDecimal(this.cordX));
         BigDecimal yDiff = y.subtract(new BigDecimal(this.cordY));
         this.distance = xDiff.pow(2).add(yDiff.pow(2));
-    }
-
-    public BigDecimal getDistance() {
-        return this.distance;
     }
 }

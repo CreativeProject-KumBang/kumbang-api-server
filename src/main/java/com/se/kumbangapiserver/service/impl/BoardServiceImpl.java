@@ -79,7 +79,7 @@ public class BoardServiceImpl implements BoardService {
             roomBoard.setRegion(r);
             r.addBoard(roomBoard);
         });
-        List<BoardFiles> files = roomBoard.getBoardFiles();
+        List<BoardFiles> files = roomBoard.getFiles();
         if (boardDetailDTO.getFiles() != null) {
             boardDetailDTO.getFiles().forEach(i -> {
                         Optional<Files> image = fileRepository.findById(i.getId());
@@ -194,8 +194,10 @@ public class BoardServiceImpl implements BoardService {
         if (roomBoard.getState().equals(BoardState.CLOSED)) {
             return false;
         }
+        LocalDateTime now = LocalDateTime.now();
+
         roomBoard.setState(BoardState.CLOSED);
-        roomBoard.setUpdatedAt(LocalDateTime.now());
+        roomBoard.setUpdatedAt(now);
         roomBoard.setCompleteData(completeDataDTO);
 
         roomBoardRepository.save(roomBoard);
@@ -203,17 +205,17 @@ public class BoardServiceImpl implements BoardService {
         Region region = regionRepository.findById(roomBoard.getRegion().getId()).orElseThrow(() -> new RuntimeException("존재하지 않는 지역입니다."));
         region.removeBoard(roomBoard);
 
-        LocalDateTime now = LocalDateTime.now();
-
         CompleteTransaction trans = CompleteTransaction.builder()
                 .address(roomBoard.getLocation())
                 .region(roomBoard.getRegion())
                 .year(String.valueOf(now.getYear()))
                 .month(String.valueOf(now.getMonthValue()))
                 .day(String.valueOf(now.getDayOfMonth()))
-                .price(String.valueOf(roomBoard.getPrice()))
-                .contractDeposit(String.valueOf(roomBoard.getContractDeposit()))
-                .contractFee(String.valueOf(roomBoard.getContractMonthlyFee()))
+                .startDate(completeDataDTO.getStartDate() == null ? roomBoard.getDurationStart() : completeDataDTO.getStartDate())
+                .endDate(completeDataDTO.getEndDate() == null ? roomBoard.getDurationEnd() : completeDataDTO.getEndDate())
+                .price(completeDataDTO.getPrice() == null ? String.valueOf(roomBoard.getPrice()) : completeDataDTO.getPrice())
+                .contractDeposit(completeDataDTO.getContractDeposit() == null ? String.valueOf(roomBoard.getContractDeposit()) : completeDataDTO.getContractDeposit())
+                .contractFee(completeDataDTO.getContractFee() == null ? String.valueOf(roomBoard.getContractMonthlyFee()) : completeDataDTO.getContractFee())
                 .roomBoard(roomBoard)
                 .build();
 
