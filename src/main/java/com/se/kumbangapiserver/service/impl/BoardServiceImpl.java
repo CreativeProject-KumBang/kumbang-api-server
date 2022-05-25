@@ -14,10 +14,10 @@ import com.se.kumbangapiserver.domain.user.UserRepository;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.dto.CompleteDataDTO;
+import com.se.kumbangapiserver.dto.TransactionDataDTO;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.type.DurationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +30,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -55,8 +54,15 @@ public class BoardServiceImpl implements BoardService {
         BoardDetailDTO boardDetailDTO = null;
         if (findBoard.isPresent()) {
             boardDetailDTO = findBoard.get().toDetailDTO();
+            List<CompleteDataDTO> collect = completeTransactionRepository
+                    .findAllByAddress(boardDetailDTO.getLocation())
+                    .stream()
+                    .map(CompleteTransaction::toCompleteDTO)
+                    .collect(Collectors.toList());
+            boardDetailDTO.setCompleteData(collect);
+            return boardDetailDTO;
         }
-        return boardDetailDTO;
+        throw new RuntimeException("Board not found");
     }
 
     @Override

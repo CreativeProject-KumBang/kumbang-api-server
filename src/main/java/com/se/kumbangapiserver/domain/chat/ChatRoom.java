@@ -5,6 +5,7 @@ import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.ChatRoomDTO;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @SuperBuilder
 @AllArgsConstructor
 @RequiredArgsConstructor
+@Getter
 public class ChatRoom extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +41,9 @@ public class ChatRoom extends BaseTimeEntity {
     @JoinColumn(name = "buyer_user_id")
     private User buyer;
 
-    @Column(name = "last_message")
-    private String lastMessage;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "last_message")
+    private ChatData lastMessage;
 
     @Transient
     @Column(name = "is_buyer")
@@ -62,6 +65,10 @@ public class ChatRoom extends BaseTimeEntity {
         return isBuyer;
     }
 
+    public void setLastMessage(ChatData lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
     public ChatRoomDTO toDTO() {
         return ChatRoomDTO.builder()
                 .chatRoomId(id)
@@ -71,7 +78,7 @@ public class ChatRoom extends BaseTimeEntity {
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .removedAt(removedAt)
-                .lastMessage(lastMessage)
+                .lastMessage(lastMessage.toDTO())
                 .isBuyer(isBuyer)
                 .build();
     }

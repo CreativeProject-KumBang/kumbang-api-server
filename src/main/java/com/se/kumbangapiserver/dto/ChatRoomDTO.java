@@ -23,6 +23,6 @@ public class ChatRoomDTO {
     private LocalDateTime updatedAt;
     private LocalDateTime removedAt;
     private UserDTO buyer;
-    private String lastMessage;
+    private ChatDataDTO lastMessage;
     private Boolean isBuyer;
 }

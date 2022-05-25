@@ -15,6 +15,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     Optional<ChatRoom> findByBuyerAndRoomBoard(User buyer, RoomBoard roomBoard);
 
-    Page<ChatRoom> findAllByBuyerOrRoomBoard_User(User buyer, User seller, Pageable pageable);
+    Page<ChatRoom> findDistinctByBuyerOrRoomBoard_User(User buyer, User seller, Pageable pageable);
 
 }

@@ -48,6 +48,8 @@ public class BoardDetailDTO {
     private String cordX;
     private String cordY;
 
+    private List<CompleteDataDTO> completeData;
+
     private RegionDetailDTO region;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -68,5 +70,9 @@ public class BoardDetailDTO {
 
     public void setUser(UserDTO user) {
         this.user = user;
+    }
+
+    public void setCompleteData(List<CompleteDataDTO> completeData) {
+        this.completeData = completeData;
     }
 }

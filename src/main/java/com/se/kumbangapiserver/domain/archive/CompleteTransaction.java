@@ -3,6 +3,7 @@ package com.se.kumbangapiserver.domain.archive;
 import com.se.kumbangapiserver.domain.board.RoomBoard;
 import com.se.kumbangapiserver.domain.common.BaseTimeEntity;
 import com.se.kumbangapiserver.domain.user.User;
+import com.se.kumbangapiserver.dto.CompleteDataDTO;
 import com.se.kumbangapiserver.dto.TransactionDataDTO;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -63,7 +64,7 @@ public class CompleteTransaction extends BaseTimeEntity {
     private String contractFee;
 
 
-    public TransactionDataDTO toDTO() {
+    public TransactionDataDTO toTransactionDTO() {
         return TransactionDataDTO.builder()
                 .id(id)
                 .address(address)
@@ -76,6 +77,18 @@ public class CompleteTransaction extends BaseTimeEntity {
                 .price(price)
                 .contractDeposit(contractDeposit)
                 .contractFee(contractFee)
+                .build();
+    }
+
+    public CompleteDataDTO toCompleteDTO() {
+        return CompleteDataDTO.builder()
+                .id(String.valueOf(id))
+                .contractFee(contractFee)
+                .contractDeposit(contractDeposit)
+                .price(price)
+                .startDate(startDate)
+                .endDate(endDate)
+                .address(address)
                 .build();
     }
 }

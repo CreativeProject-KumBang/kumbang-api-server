@@ -3,6 +3,7 @@ package com.se.kumbangapiserver.domain.chat;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.ChatDataDTO;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "chat_data")
 @Entity
 @SuperBuilder
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 

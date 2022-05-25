@@ -9,10 +9,7 @@ import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.dto.CompleteDataDTO;
 import com.se.kumbangapiserver.dto.FilesDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -48,11 +45,9 @@ public class RoomBoard extends BaseTimeEntity {
 
     @Column(name = "board_state")
     @Enumerated(EnumType.STRING)
-    @Builder.Default
     private BoardState state = BoardState.OPEN;
 
     @Column(name = "hit_count")
-    @Builder.Default
     private Integer hitCount = 0;
 
     @Column(name = "duration_start")
@@ -121,6 +116,18 @@ public class RoomBoard extends BaseTimeEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "board", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<WishList> wishList;
+
+    public void setWishList(List<WishList> wishList) {
+        this.wishList = wishList;
+    }
+
+    public void setCompleteTransaction(CompleteTransaction completeTransaction) {
+        this.completeTransaction = completeTransaction;
+    }
+
+    public void setFiles(List<BoardFiles> files) {
+        this.files = files;
+    }
 
     public void changeState(BoardState state) {
         this.state = state;

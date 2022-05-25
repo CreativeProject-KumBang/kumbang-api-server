@@ -55,6 +55,7 @@ public class ChatController {
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(chatRoomsBoard)).build());
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
@@ -85,7 +86,7 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/api/chat/read")
+    @PostMapping("/api/chat/read")
     @ResponseBody
     public void readChat(@RequestBody String messageId) {
         try {

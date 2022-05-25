@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,11 +31,14 @@ public class BoardController {
     @GetMapping("/api/board/{id}")
     @ResponseBody
     public ResponseEntity<ResponseForm<Object>> getBoardDetail(@PathVariable("id") String id) {
-        BoardDetailDTO boardDetail = boardService.getBoardDetail(id);
-        if (boardDetail == null) {
-            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("Not Found")).build());
+        try {
+            BoardDetailDTO boardDetail = boardService.getBoardDetail(id);
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(Objects.requireNonNullElse(boardDetail, "Not Found"))).build());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
-        return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(boardDetail)).build());
+
     }
 
     @PostMapping("/api/board/new")

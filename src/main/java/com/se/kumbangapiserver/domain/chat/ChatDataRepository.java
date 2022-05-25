@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ChatDataRepository extends JpaRepository<ChatData, Long> {
 
-    List<ChatData> findAllByChatRoom(ChatRoom chatRoom);
+    List<ChatData> findAllByChatRoomOrderByCreatedAtDesc(ChatRoom chatRoom);
 }

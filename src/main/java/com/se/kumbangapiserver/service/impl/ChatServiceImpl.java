@@ -43,6 +43,10 @@ public class ChatServiceImpl implements ChatService {
         User contextUser = userRepository.findById(Common.getUserContext().getId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
         RoomBoard contextBoard = roomBoardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("게시글이 존재하지 않습니다."));
 
+        if (contextUser.getId().equals(contextBoard.getUser().getId())) {
+            throw new RuntimeException("자신의 게시글은 채팅방에 참여할 수 없습니다.");
+        }
+
         Optional<ChatRoom> findRoomBoard = chatRoomRepository.findByBuyerAndRoomBoard(contextUser, contextBoard);
         if (findRoomBoard.isPresent()) {
             return findRoomBoard.get().getId();
@@ -67,7 +71,7 @@ public class ChatServiceImpl implements ChatService {
         User contextUser = userRepository.findById(Common.getUserContext().getId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new RuntimeException("채팅방이 존재하지 않습니다."));
 
-        List<ChatData> chatDataList = chatDataRepository.findAllByChatRoom(chatRoom);
+        List<ChatData> chatDataList = chatDataRepository.findAllByChatRoomOrderByCreatedAtDesc(chatRoom);
         for (ChatData chatData : chatDataList) {
             if (chatData.getSender().getId().equals(contextUser.getId())) {
                 continue;
@@ -82,7 +86,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Page<ChatRoomDTO> getChatRoomsBoardList(Pageable pageable) {
         User contextUser = userRepository.findById(Common.getUserContext().getId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
-        Page<ChatRoom> byRoomBoard = chatRoomRepository.findAllByBuyerOrRoomBoard_User(contextUser, contextUser, pageable);
+        Page<ChatRoom> byRoomBoard = chatRoomRepository.findDistinctByBuyerOrRoomBoard_User(contextUser, contextUser, pageable);
         Page<ChatRoom> buyerSetPage = byRoomBoard.map(e -> {
             if (e.getBuyer().getId().equals(contextUser.getId())) {
                 e.setBuyer(true);
@@ -98,6 +102,8 @@ public class ChatServiceImpl implements ChatService {
     public void appendChat(ChatDataDTO chatDataDTO) {
         ChatData chatData = ChatData.fromDTO(chatDataDTO);
         ChatRoom chatRoom = chatRoomRepository.findById(chatDataDTO.getRoomId()).orElseThrow(() -> new RuntimeException("채팅방이 존재하지 않습니다."));
+        chatRoom.setLastMessage(chatData);
+        chatRoom.setUpdatedAt(LocalDateTime.now());
         chatData.setChatRoom(chatRoom);
         chatData.setCreatedAt(LocalDateTime.now());
         chatData.setReadStatus(Boolean.FALSE);

@@ -11,5 +11,5 @@ import java.util.List;
 @Builder
 public class ResponseForm<T> {
     private Boolean status;
-    private List<T> response;
+    private T response;
 }

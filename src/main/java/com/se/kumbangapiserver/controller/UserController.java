@@ -6,6 +6,7 @@ import com.se.kumbangapiserver.dto.UserDTO;
 import com.se.kumbangapiserver.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -59,7 +60,6 @@ public class UserController {
 
     @DeleteMapping("/api/user")
     public ResponseEntity<ResponseForm<Object>> deleteUser() {
-
         try {
             log.info("delete user");
             userService.deleteUser();
@@ -69,4 +69,15 @@ public class UserController {
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
+
+    @GetMapping("/api/mypage/history")
+    public ResponseForm<Object> getHistory(Pageable pageable) {
+        try {
+            return ResponseForm.builder().status(Boolean.TRUE).response(userService.getHistory(pageable)).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseForm.builder().status(Boolean.FALSE).response("fail").build();
+        }
+    }
+
 }
