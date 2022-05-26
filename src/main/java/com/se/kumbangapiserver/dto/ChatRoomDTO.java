@@ -1,9 +1,6 @@
 package com.se.kumbangapiserver.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 
 public class ChatRoomDTO {
 
@@ -25,4 +23,5 @@ public class ChatRoomDTO {
     private UserDTO buyer;
     private ChatDataDTO lastMessage;
     private Boolean isBuyer;
+    private Boolean isNew = false;
 }

@@ -95,11 +95,18 @@ public class ChatServiceImpl implements ChatService {
             e.setBuyer(false);
             return e;
         });
-        return buyerSetPage.map(ChatRoom::toDTO);
+        Page<ChatRoomDTO> map = buyerSetPage.map(ChatRoom::toDTO);
+        map.forEach(e -> {
+            ChatDataDTO lastMessage = e.getLastMessage();
+            if ((lastMessage != null) && (!lastMessage.getSender().getId().equals(String.valueOf(contextUser.getId()))) && (!lastMessage.getIsRead())) {
+                e.setIsNew(true);
+            }
+        });
+        return map;
     }
 
     @Override
-    public void appendChat(ChatDataDTO chatDataDTO) {
+    public ChatDataDTO appendChat(ChatDataDTO chatDataDTO) {
         ChatData chatData = ChatData.fromDTO(chatDataDTO);
         ChatRoom chatRoom = chatRoomRepository.findById(chatDataDTO.getRoomId()).orElseThrow(() -> new RuntimeException("채팅방이 존재하지 않습니다."));
         chatRoom.setLastMessage(chatData);
@@ -108,7 +115,7 @@ public class ChatServiceImpl implements ChatService {
         chatData.setCreatedAt(LocalDateTime.now());
         chatData.setReadStatus(Boolean.FALSE);
 
-        chatDataRepository.save(chatData);
+        return chatDataRepository.save(chatData).toDTO();
     }
 
     @Override

@@ -80,6 +80,7 @@ public class ChatRoom extends BaseTimeEntity {
                 .removedAt(removedAt)
                 .lastMessage(lastMessage.toDTO())
                 .isBuyer(isBuyer)
+                .isNew(false)
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.se.kumbangapiserver.service;
 
+import com.se.kumbangapiserver.domain.chat.ChatData;
 import com.se.kumbangapiserver.dto.ChatDataDTO;
 import com.se.kumbangapiserver.dto.ChatRoomDTO;
 import com.se.kumbangapiserver.dto.UserDTO;
@@ -17,7 +18,7 @@ public interface ChatService {
     Page<ChatRoomDTO> getChatRoomsBoardList(Pageable pageable);
 
 
-    void appendChat(ChatDataDTO chatDataDTO);
+    ChatDataDTO appendChat(ChatDataDTO chatDataDTO);
 
     void readChat(Long messageId);
 }

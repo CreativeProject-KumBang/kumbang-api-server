@@ -73,6 +73,7 @@ public class ChatData {
                 .sender(sender.toDTO())
                 .content(content)
                 .createdAt(createdAt)
+                .isRead(readStatus)
                 .build();
     }
 
