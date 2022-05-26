@@ -32,6 +32,9 @@ public class RoomBoardRepositoryCustomImpl implements RoomBoardRepositoryCustom 
         if (query.getDurationType() == null) {
             return null;
         }
+        if (query.getDurationType().equals("all")) {
+            return null;
+        }
         return QRoomBoard.roomBoard.durationTerm.eq(DurationTerm.valueOf(query.getDurationType()));
     }
 
@@ -39,14 +42,14 @@ public class RoomBoardRepositoryCustomImpl implements RoomBoardRepositoryCustom 
         if (query.getDurationStart() == null) {
             return null;
         }
-        return QRoomBoard.roomBoard.durationStart.before(query.getDurationStart());
+        return QRoomBoard.roomBoard.durationStart.goe(query.getDurationStart());
     }
 
     BooleanExpression durationEnd(RoomBoardSearchQuery query) {
         if (query.getDurationEnd() == null) {
             return null;
         }
-        return QRoomBoard.roomBoard.durationEnd.after(query.getDurationEnd());
+        return QRoomBoard.roomBoard.durationEnd.loe(query.getDurationEnd());
     }
 
     BooleanExpression priceStart(RoomBoardSearchQuery query) {

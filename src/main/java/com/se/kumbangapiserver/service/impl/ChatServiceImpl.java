@@ -106,6 +106,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional
     public ChatDataDTO appendChat(ChatDataDTO chatDataDTO) {
         ChatData chatData = ChatData.fromDTO(chatDataDTO);
         ChatRoom chatRoom = chatRoomRepository.findById(chatDataDTO.getRoomId()).orElseThrow(() -> new RuntimeException("채팅방이 존재하지 않습니다."));
@@ -115,6 +116,7 @@ public class ChatServiceImpl implements ChatService {
         chatData.setCreatedAt(LocalDateTime.now());
         chatData.setReadStatus(Boolean.FALSE);
 
+        chatRoomRepository.save(chatRoom);
         return chatDataRepository.save(chatData).toDTO();
     }
 
@@ -124,6 +126,4 @@ public class ChatServiceImpl implements ChatService {
         chatData.setReadStatus(Boolean.TRUE);
         chatDataRepository.save(chatData);
     }
-
-
 }

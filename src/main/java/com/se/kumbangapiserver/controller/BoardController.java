@@ -83,6 +83,10 @@ public class BoardController {
             Pageable pageable
     ) {
         try {
+
+            for (String key : params.keySet()) {
+                log.info("params key : {} / param value : {}", key, params.get(key));
+            }
             Page<BoardListDTO> boardList = boardService.getBoardList(params, pageable);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(boardList)).build());
         } catch (Exception e) {

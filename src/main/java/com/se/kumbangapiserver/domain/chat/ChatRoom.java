@@ -46,7 +46,6 @@ public class ChatRoom extends BaseTimeEntity {
     private ChatData lastMessage;
 
     @Transient
-    @Column(name = "is_buyer")
     private boolean isBuyer;
 
     public Long getId() {
@@ -78,7 +77,7 @@ public class ChatRoom extends BaseTimeEntity {
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .removedAt(removedAt)
-                .lastMessage(lastMessage.toDTO())
+                .lastMessage(lastMessage == null ? null : lastMessage.toDTO())
                 .isBuyer(isBuyer)
                 .isNew(false)
                 .build();

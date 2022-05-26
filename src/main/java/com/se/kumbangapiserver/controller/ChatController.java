@@ -41,6 +41,7 @@ public class ChatController {
     @PostMapping("/api/chat/{boardId}")
     public ResponseEntity<ResponseForm<Object>> makeChatRoom(@PathVariable String boardId) {
         try {
+            log.info("boardId : {}", boardId);
             return ResponseEntity.ok(ResponseForm.builder().status(true).response(Collections.singletonList(chatService.makeChatRoom(Long.valueOf(boardId)))).build());
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,10 +78,10 @@ public class ChatController {
             log.info("send message : {}", chatDataDTO.toString());
             LocalDateTime now = LocalDateTime.now();
             chatDataDTO.setCreatedAt(now);
-            chatService.appendChat(chatDataDTO);
+            ChatDataDTO chatDataDTO1 = chatService.appendChat(chatDataDTO);
 
-            String url = "/user/" + chatDataDTO.getRoomId() + "/queue/messages";
-            simpMessage.convertAndSend(url, chatDataDTO);
+            String url = "/user/" + chatDataDTO1.getRoomId() + "/queue/messages";
+            simpMessage.convertAndSend(url, chatDataDTO1);
         } catch (Exception e) {
             e.printStackTrace();
         }
