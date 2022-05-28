@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -89,9 +90,9 @@ public class ChatController {
 
     @PostMapping("/api/chat/read")
     @ResponseBody
-    public void readChat(@RequestBody String messageId) {
+    public void readChat(@RequestBody Map<String, String> params) {
         try {
-            chatService.readChat(Long.valueOf(messageId));
+            chatService.readChat(Long.valueOf(params.get("messageId")));
         } catch (Exception e) {
             e.printStackTrace();
         }

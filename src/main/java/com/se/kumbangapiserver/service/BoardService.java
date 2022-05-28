@@ -4,6 +4,7 @@ package com.se.kumbangapiserver.service;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.dto.CompleteDataDTO;
+import com.se.kumbangapiserver.dto.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -32,4 +33,5 @@ public interface BoardService {
 
     Page<BoardListDTO> getMyBoardList(String userId, Pageable pageable);
 
+    Page<UserDTO> getBuyerList(Long boardId, Pageable pageable);
 }

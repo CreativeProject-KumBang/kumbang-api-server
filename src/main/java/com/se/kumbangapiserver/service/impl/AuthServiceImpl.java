@@ -42,6 +42,12 @@ public class AuthServiceImpl implements AuthService {
             signDTO.setMessage("이미 존재하는 이메일입니다.");
             return signDTO;
         }
+        if (userRepository.findByNickname(signUpDTO.getNickname()).isPresent()) {
+            signDTO.setResult("fail");
+            signDTO.setMessage("이미 존재하는 닉네임입니다.");
+            return signDTO;
+        }
+
         String encodedPw = passwordEncoder.encode(signUpDTO.getPassword());
 
         LocalDateTime now = LocalDateTime.now();

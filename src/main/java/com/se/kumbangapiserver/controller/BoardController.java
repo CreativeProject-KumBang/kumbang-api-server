@@ -6,6 +6,7 @@ import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.BoardDetailDTO;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.dto.CompleteDataDTO;
+import com.se.kumbangapiserver.dto.UserDTO;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -129,9 +130,21 @@ public class BoardController {
         }
     }
 
-    @PostMapping("/api/board/{id}/complete")
+    @GetMapping("/api/board/{boardId}/buyer")
     @ResponseBody
-    public ResponseEntity<ResponseForm<Object>> complete(@PathVariable("id") String id, @RequestBody CompleteDataDTO completeDataDTO) {
+    public ResponseForm<Object> getBuyerList(@PathVariable String boardId, Pageable pageable) {
+        try {
+            Page<UserDTO> buyerList = boardService.getBuyerList(Long.valueOf(boardId), pageable);
+            return ResponseForm.builder().status(Boolean.TRUE).response(buyerList).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseForm.builder().status(Boolean.FALSE).response("fail").build();
+        }
+    }
+
+    @PostMapping("/api/board/{boardId}/complete")
+    @ResponseBody
+    public ResponseEntity<ResponseForm<Object>> complete(@PathVariable("boardId") String id, @RequestBody CompleteDataDTO completeDataDTO) {
         try {
             Boolean complete = boardService.complete(id, completeDataDTO);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(complete)).build());

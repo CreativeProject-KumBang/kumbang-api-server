@@ -20,8 +20,7 @@ public class RoomBoardRepositoryCustomImpl implements RoomBoardRepositoryCustom 
                         roomBoard.cordX.between(query.getMinCordX(), query.getMaxCordX()),
                         roomBoard.cordY.between(query.getMinCordY(), query.getMaxCordY()),
                         durationType(query),
-                        durationStart(query),
-                        durationEnd(query),
+                        durationBetween(query),
                         priceStart(query),
                         priceEnd(query)
                 )
@@ -35,7 +34,8 @@ public class RoomBoardRepositoryCustomImpl implements RoomBoardRepositoryCustom 
         if (query.getDurationType().equals("all")) {
             return null;
         }
-        return QRoomBoard.roomBoard.durationTerm.eq(DurationTerm.valueOf(query.getDurationType()));
+
+        return QRoomBoard.roomBoard.durationTerm.eq(DurationTerm.valueOf(query.getDurationType().toUpperCase()));
     }
 
     BooleanExpression durationStart(RoomBoardSearchQuery query) {
@@ -50,6 +50,14 @@ public class RoomBoardRepositoryCustomImpl implements RoomBoardRepositoryCustom 
             return null;
         }
         return QRoomBoard.roomBoard.durationEnd.loe(query.getDurationEnd());
+    }
+
+    BooleanExpression durationBetween(RoomBoardSearchQuery query) {
+        if (query.getDurationStart() == null || query.getDurationEnd() == null) {
+            return null;
+        }
+        return QRoomBoard.roomBoard.durationStart.goe(query.getDurationStart())
+                .and(QRoomBoard.roomBoard.durationEnd.loe(query.getDurationEnd()));
     }
 
     BooleanExpression priceStart(RoomBoardSearchQuery query) {

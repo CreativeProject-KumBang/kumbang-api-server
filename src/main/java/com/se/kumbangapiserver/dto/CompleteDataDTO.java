@@ -11,6 +11,7 @@ public class CompleteDataDTO {
     private String id;
     private String contractFee;
     private String contractDeposit;
+    private UserDTO buyer;
     private String price;
     private LocalDate startDate;
     private LocalDate endDate;

@@ -7,17 +7,17 @@ import com.se.kumbangapiserver.domain.archive.CompleteTransactionRepository;
 import com.se.kumbangapiserver.domain.archive.Region;
 import com.se.kumbangapiserver.domain.archive.RegionRepository;
 import com.se.kumbangapiserver.domain.board.*;
+import com.se.kumbangapiserver.domain.chat.ChatRoom;
+import com.se.kumbangapiserver.domain.chat.ChatRoomRepository;
 import com.se.kumbangapiserver.domain.file.FileRepository;
 import com.se.kumbangapiserver.domain.file.Files;
 import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.domain.user.UserRepository;
-import com.se.kumbangapiserver.dto.BoardDetailDTO;
-import com.se.kumbangapiserver.dto.BoardListDTO;
-import com.se.kumbangapiserver.dto.CompleteDataDTO;
-import com.se.kumbangapiserver.dto.TransactionDataDTO;
+import com.se.kumbangapiserver.dto.*;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.type.DurationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,6 +44,7 @@ public class BoardServiceImpl implements BoardService {
     private final CompleteTransactionRepository completeTransactionRepository;
     private final FileRepository fileRepository;
     private final BoardFilesRepository boardFilesRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final MapAPI mapAPI;
 
 
@@ -217,11 +219,11 @@ public class BoardServiceImpl implements BoardService {
                 .year(String.valueOf(now.getYear()))
                 .month(String.valueOf(now.getMonthValue()))
                 .day(String.valueOf(now.getDayOfMonth()))
-                .startDate(completeDataDTO.getStartDate() == null ? roomBoard.getDurationStart() : completeDataDTO.getStartDate())
-                .endDate(completeDataDTO.getEndDate() == null ? roomBoard.getDurationEnd() : completeDataDTO.getEndDate())
-                .price(completeDataDTO.getPrice() == null ? String.valueOf(roomBoard.getPrice()) : completeDataDTO.getPrice())
-                .contractDeposit(completeDataDTO.getContractDeposit() == null ? String.valueOf(roomBoard.getContractDeposit()) : completeDataDTO.getContractDeposit())
-                .contractFee(completeDataDTO.getContractFee() == null ? String.valueOf(roomBoard.getContractMonthlyFee()) : completeDataDTO.getContractFee())
+                .startDate(roomBoard.getDurationStart())
+                .endDate(roomBoard.getDurationEnd())
+                .price(String.valueOf(roomBoard.getPrice()))
+                .contractDeposit(String.valueOf(roomBoard.getContractDeposit()))
+                .contractFee(String.valueOf(roomBoard.getContractMonthlyFee()))
                 .roomBoard(roomBoard)
                 .build();
 
@@ -237,6 +239,14 @@ public class BoardServiceImpl implements BoardService {
         Page<RoomBoard> findBoards = roomBoardRepository.findByUser(contextUser, pageable);
 
         return findBoards.map(RoomBoard::toListDTO);
+    }
+
+    @Override
+    public Page<UserDTO> getBuyerList(Long boardId, Pageable pageable) {
+        RoomBoard roomBoard = roomBoardRepository.findById(boardId).orElseThrow(() -> new RuntimeException("존재하지 않는 게시글입니다."));
+        Page<ChatRoom> chatRoomPage = chatRoomRepository.findAllByRoomBoard(roomBoard, pageable);
+
+        return chatRoomPage.map(ChatRoom::getBuyer).map(User::toDTO);
     }
 
     private Page<BoardListDTO> findListAndSort(Map<String, String> params, Pageable pageable) {
@@ -266,11 +276,11 @@ public class BoardServiceImpl implements BoardService {
         if (params.containsKey("durationType")) {
             queryParams.setDurationType(params.get("durationType"));
         }
-        if (params.containsKey("durationStart")) {
-            queryParams.setDurationStart(LocalDate.parse(params.get("durationStart")));
+        if (params.containsKey("startDate")) {
+            queryParams.setDurationStart(LocalDate.parse(params.get("startDate")));
         }
-        if (params.containsKey("durationEnd")) {
-            queryParams.setDurationEnd(LocalDate.parse(params.get("durationEnd")));
+        if (params.containsKey("endDate")) {
+            queryParams.setDurationEnd(LocalDate.parse(params.get("endDate")));
         }
         if (params.containsKey("priceStart")) {
             queryParams.setPriceStart(Integer.parseInt(params.get("priceStart")));

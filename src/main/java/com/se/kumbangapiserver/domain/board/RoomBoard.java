@@ -147,6 +147,12 @@ public class RoomBoard extends BaseTimeEntity {
         if (completeData.getContractDeposit() != null) {
             this.contractDeposit = Integer.valueOf(completeData.getContractDeposit());
         }
+        if (completeData.getStartDate() != null) {
+            this.durationStart = completeData.getStartDate();
+        }
+        if (completeData.getEndDate() != null) {
+            this.durationEnd = completeData.getEndDate();
+        }
     }
 
     public void setState(BoardState state) {

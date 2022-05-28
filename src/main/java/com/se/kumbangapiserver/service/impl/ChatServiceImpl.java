@@ -121,6 +121,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional
     public void readChat(Long messageId) {
         ChatData chatData = chatDataRepository.findById(messageId).orElseThrow(() -> new RuntimeException("채팅이 존재하지 않습니다."));
         chatData.setReadStatus(Boolean.TRUE);
