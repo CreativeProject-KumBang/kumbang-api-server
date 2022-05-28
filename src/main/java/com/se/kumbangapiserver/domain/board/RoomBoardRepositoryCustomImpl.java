@@ -42,22 +42,22 @@ public class RoomBoardRepositoryCustomImpl implements RoomBoardRepositoryCustom 
         if (query.getDurationStart() == null) {
             return null;
         }
-        return QRoomBoard.roomBoard.durationStart.goe(query.getDurationStart());
+        return QRoomBoard.roomBoard.durationStart.loe(query.getDurationStart());
     }
 
     BooleanExpression durationEnd(RoomBoardSearchQuery query) {
         if (query.getDurationEnd() == null) {
             return null;
         }
-        return QRoomBoard.roomBoard.durationEnd.loe(query.getDurationEnd());
+        return QRoomBoard.roomBoard.durationEnd.goe(query.getDurationEnd());
     }
 
     BooleanExpression durationBetween(RoomBoardSearchQuery query) {
         if (query.getDurationStart() == null || query.getDurationEnd() == null) {
             return null;
         }
-        return QRoomBoard.roomBoard.durationStart.goe(query.getDurationStart())
-                .and(QRoomBoard.roomBoard.durationEnd.loe(query.getDurationEnd()));
+        return QRoomBoard.roomBoard.durationStart.loe(query.getDurationStart())
+                .and(QRoomBoard.roomBoard.durationEnd.goe(query.getDurationEnd()));
     }
 
     BooleanExpression priceStart(RoomBoardSearchQuery query) {

@@ -13,6 +13,7 @@ public class CompleteDataDTO {
     private String contractDeposit;
     private UserDTO buyer;
     private String price;
+    private String deposit;
     private LocalDate startDate;
     private LocalDate endDate;
     private RegionDetailDTO region;
