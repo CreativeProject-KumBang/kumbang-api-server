@@ -24,11 +24,11 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/api/user/{userId}/like-boards")
-    public ResponseEntity<ResponseForm<Object>> getLikeBoards(@PathVariable String userId) {
+    @GetMapping("/api/mypage/like-boards")
+    public ResponseEntity<ResponseForm<Object>> getLikeBoards() {
 
         try {
-            List<BoardListDTO> wishList = userService.getWishList(userId);
+            List<BoardListDTO> wishList = userService.getWishList();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(wishList)).build());
         } catch (Exception e) {
             e.printStackTrace();

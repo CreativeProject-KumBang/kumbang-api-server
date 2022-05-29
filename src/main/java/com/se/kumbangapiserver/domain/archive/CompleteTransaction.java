@@ -28,7 +28,7 @@ public class CompleteTransaction extends BaseTimeEntity {
     @JoinColumn(name = "room_board_id")
     private RoomBoard roomBoard;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
     @JoinColumn(name = "buyer_id")
     private User buyer;
 
@@ -56,6 +56,9 @@ public class CompleteTransaction extends BaseTimeEntity {
 
     @Column(name = "price")
     private String price;
+
+    @Column(name = "deposit")
+    private String deposit;
 
     @Column(name = "contract_deposit")
     private String contractDeposit;
@@ -86,9 +89,14 @@ public class CompleteTransaction extends BaseTimeEntity {
                 .contractFee(contractFee)
                 .contractDeposit(contractDeposit)
                 .price(price)
+                .deposit(deposit)
                 .startDate(startDate)
                 .endDate(endDate)
                 .address(address)
                 .build();
+    }
+
+    public void setBuyer(User buyer) {
+        this.buyer = buyer;
     }
 }

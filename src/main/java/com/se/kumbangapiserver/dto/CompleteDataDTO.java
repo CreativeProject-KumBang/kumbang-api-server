@@ -2,10 +2,12 @@ package com.se.kumbangapiserver.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
 @Getter
+@ToString
 @Builder
 public class CompleteDataDTO {
     private String id;

@@ -22,7 +22,8 @@ public class RoomBoardRepositoryCustomImpl implements RoomBoardRepositoryCustom 
                         durationType(query),
                         durationBetween(query),
                         priceStart(query),
-                        priceEnd(query)
+                        priceEnd(query),
+                        roomBoard.state.eq(BoardState.OPEN)
                 )
                 .fetch();
     }

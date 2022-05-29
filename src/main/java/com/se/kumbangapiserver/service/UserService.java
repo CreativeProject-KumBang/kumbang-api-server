@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface UserService {
 
-    List<BoardListDTO> getWishList(String userId);
+    List<BoardListDTO> getWishList();
 
     UserDTO getUser(String userId);
 

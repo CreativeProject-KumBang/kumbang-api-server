@@ -98,30 +98,44 @@ public class BoardController {
 
     @GetMapping("/api/board/islike")
     @ResponseBody
-    public ResponseEntity<ResponseForm<Object>> isLike(@RequestParam Map<String, String> params) {
+    public ResponseForm<Object> isLike(@RequestParam Map<String, String> params) {
         try {
+            log.info("isLike request");
+            for (String key : params.keySet()) {
+                log.info("params key : {} / param value : {}", key, params.get(key));
+            }
             Boolean isLike = boardService.isLike(params);
-            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(isLike)).build());
+            return ResponseForm.builder().status(Boolean.TRUE).response(isLike).build();
         } catch (Exception e) {
-            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
+            e.printStackTrace();
+            return ResponseForm.builder().status(Boolean.FALSE).response("fail").build();
         }
     }
 
     @PostMapping("/api/board/like")
     @ResponseBody
-    public ResponseEntity<ResponseForm<Object>> like(@RequestParam Map<String, String> params) {
+    public ResponseEntity<ResponseForm<Object>> like(@RequestBody Map<String, String> params) {
         try {
+            log.info("like request");
+            for (String key : params.keySet()) {
+                log.info("params key : {} / param value : {}", key, params.get(key));
+            }
             Boolean like = boardService.like(params);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(like)).build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
 
     @PostMapping("/api/board/unlike")
     @ResponseBody
-    public ResponseEntity<ResponseForm<Object>> unlike(@RequestParam Map<String, String> params) {
+    public ResponseEntity<ResponseForm<Object>> unlike(@RequestBody Map<String, String> params) {
         try {
+            log.info("unlike request");
+            for (String key : params.keySet()) {
+                log.info("params key : {} / param value : {}", key, params.get(key));
+            }
             Boolean unlike = boardService.unlike(params);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(unlike)).build());
         } catch (Exception e) {
@@ -146,9 +160,12 @@ public class BoardController {
     @ResponseBody
     public ResponseEntity<ResponseForm<Object>> complete(@PathVariable("boardId") String id, @RequestBody CompleteDataDTO completeDataDTO) {
         try {
+            log.info("complete request");
+            log.info("completeDataDTO : {}", completeDataDTO.toString());
             Boolean complete = boardService.complete(id, completeDataDTO);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(complete)).build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }

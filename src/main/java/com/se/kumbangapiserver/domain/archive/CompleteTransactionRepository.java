@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface CompleteTransactionRepository extends JpaRepository<CompleteTransaction, Long> {
 
-    List<CompleteTransaction> findAllByAddress(String address);
+    List<CompleteTransaction> findAllByAddressOrderByCreatedAtDesc(String address);
 
     Optional<CompleteTransaction> findByRoomBoard(RoomBoard roomBoard);
 

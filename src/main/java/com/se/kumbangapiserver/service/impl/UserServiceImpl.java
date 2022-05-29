@@ -30,11 +30,11 @@ public class UserServiceImpl implements UserService {
     private final CompleteTransactionRepository completeTransactionRepository;
 
     @Override
-    public List<BoardListDTO> getWishList(String userId) {
+    public List<BoardListDTO> getWishList() {
 
-//        User userContext = Common.getUserContext();
-        User userContext = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-        List<WishList> findWishList = wishListRepository.findAllByUser(userContext);
+        User userContext = Common.getUserContext();
+        User user = userRepository.findById(userContext.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+        List<WishList> findWishList = wishListRepository.findAllByUser(user);
         List<BoardListDTO> boardListDTOs = new ArrayList<>();
         for (WishList wishList : findWishList) {
 

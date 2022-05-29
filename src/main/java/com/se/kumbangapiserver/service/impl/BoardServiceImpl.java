@@ -17,17 +17,16 @@ import com.se.kumbangapiserver.dto.*;
 import com.se.kumbangapiserver.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.type.DurationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,7 +56,7 @@ public class BoardServiceImpl implements BoardService {
         if (findBoard.isPresent()) {
             boardDetailDTO = findBoard.get().toDetailDTO();
             List<CompleteDataDTO> collect = completeTransactionRepository
-                    .findAllByAddress(boardDetailDTO.getLocation())
+                    .findAllByAddressOrderByCreatedAtDesc(boardDetailDTO.getLocation())
                     .stream()
                     .map(CompleteTransaction::toCompleteDTO)
                     .collect(Collectors.toList());
@@ -164,12 +163,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public Boolean like(Map<String, String> params) {
+    public Boolean like(@RequestBody Map<String, String> params) {
 
-        User contextUser = Common.getUserContext();
-        User persistedUser = userRepository.findById(contextUser.getId()).orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
+        Long contextUser = Common.getUserContext().getId();
+        User persistedUser = userRepository.findById(contextUser).orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
         RoomBoard roomBoard = roomBoardRepository.findById(Long.valueOf(params.get("boardId"))).orElseThrow(() -> new RuntimeException("존재하지 않는 게시글입니다."));
-        Optional<WishList> wishlist = wishlistRepository.findByUserIdAndBoardId(contextUser.getId(), roomBoard.getId());
+        Optional<WishList> wishlist = wishlistRepository.findByUserIdAndBoardId(persistedUser.getId(), roomBoard.getId());
 
         if (wishlist.isPresent()) {
             return false;
@@ -182,12 +181,12 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public Boolean unlike(Map<String, String> params) {
+    public Boolean unlike(@RequestBody Map<String, String> params) {
 
-        User contextUser = Common.getUserContext();
-        User persistedUser = userRepository.findById(contextUser.getId()).orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
+        Long contextUser = Common.getUserContext().getId();
+        User persistedUser = userRepository.findById(contextUser).orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
         RoomBoard roomBoard = roomBoardRepository.findById(Long.valueOf(params.get("boardId"))).orElseThrow(() -> new RuntimeException("존재하지 않는 게시글입니다."));
-        Optional<WishList> wishlist = wishlistRepository.findByUserIdAndBoardId(contextUser.getId(), roomBoard.getId());
+        Optional<WishList> wishlist = wishlistRepository.findByUserIdAndBoardId(persistedUser.getId(), roomBoard.getId());
 
         if (wishlist.isPresent()) {
             wishlistRepository.delete(wishlist.get());
@@ -206,6 +205,9 @@ public class BoardServiceImpl implements BoardService {
         if (roomBoard.getState().equals(BoardState.CLOSED)) {
             throw new RuntimeException("이미 완료된 게시글입니다.");
         }
+
+        User buyer = userRepository.findById(Long.valueOf(completeDataDTO.getBuyer().getId())).orElseThrow(() -> new RuntimeException("구매자 정보를 찾을 수 없습니다."));
+
         LocalDateTime now = LocalDateTime.now();
 
         roomBoard.setState(BoardState.CLOSED);
@@ -219,17 +221,22 @@ public class BoardServiceImpl implements BoardService {
 
         CompleteTransaction trans = CompleteTransaction.builder()
                 .address(roomBoard.getLocation())
+                .createdAt(now)
+                .updatedAt(now)
                 .region(roomBoard.getRegion())
                 .year(String.valueOf(now.getYear()))
                 .month(String.valueOf(now.getMonthValue()))
                 .day(String.valueOf(now.getDayOfMonth()))
                 .startDate(roomBoard.getDurationStart())
+                .deposit(String.valueOf(roomBoard.getDeposit()))
                 .endDate(roomBoard.getDurationEnd())
                 .price(String.valueOf(roomBoard.getPrice()))
                 .contractDeposit(String.valueOf(roomBoard.getContractDeposit()))
                 .contractFee(String.valueOf(roomBoard.getContractMonthlyFee()))
                 .roomBoard(roomBoard)
                 .build();
+
+        trans.setBuyer(buyer);
 
         completeTransactionRepository.save(trans);
 

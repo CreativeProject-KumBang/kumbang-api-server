@@ -94,10 +94,15 @@ public class Region {
         total = total.subtract(new BigDecimal(roomBoard.getPrice()));
         quantity = quantity.subtract(BigDecimal.ONE);
 
-        this.avgEntx = x.divide(quantity, 10, RoundingMode.HALF_UP);
-        this.avgEnty = y.divide(quantity, 10, RoundingMode.HALF_UP);
-        this.avgPrice = total.divide(quantity, 2, RoundingMode.HALF_UP);
-
+        if (quantity.compareTo(BigDecimal.ZERO) != 0) {
+            this.avgEntx = x.divide(quantity, 10, RoundingMode.HALF_UP);
+            this.avgEnty = y.divide(quantity, 10, RoundingMode.HALF_UP);
+            this.avgPrice = total.divide(quantity, 2, RoundingMode.HALF_UP);
+        } else {
+            this.avgEntx = BigDecimal.ZERO;
+            this.avgEnty = BigDecimal.ZERO;
+            this.avgPrice = BigDecimal.ZERO;
+        }
         this.entx = x.setScale(10, RoundingMode.HALF_UP);
         this.enty = y.setScale(10, RoundingMode.HALF_UP);
         this.totalPrice = total.setScale(2, RoundingMode.HALF_UP);
