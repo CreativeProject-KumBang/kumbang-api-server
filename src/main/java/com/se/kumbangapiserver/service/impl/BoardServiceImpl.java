@@ -53,7 +53,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public BoardDetailDTO getBoardDetail(String boardId) {
         Optional<RoomBoard> findBoard = roomBoardRepository.findById(Long.valueOf(boardId));
-        BoardDetailDTO boardDetailDTO = null;
+        BoardDetailDTO boardDetailDTO;
         if (findBoard.isPresent()) {
             boardDetailDTO = findBoard.get().toDetailDTO();
             List<CompleteDataDTO> collect = completeTransactionRepository
@@ -163,6 +163,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public Boolean like(Map<String, String> params) {
 
         User contextUser = Common.getUserContext();
@@ -180,6 +181,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public Boolean unlike(Map<String, String> params) {
 
         User contextUser = Common.getUserContext();
@@ -196,11 +198,13 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public Boolean complete(String boardId, CompleteDataDTO completeDataDTO) {
 
         RoomBoard roomBoard = roomBoardRepository.findById(Long.valueOf(boardId)).orElseThrow(() -> new RuntimeException("존재하지 않는 게시글입니다."));
+
         if (roomBoard.getState().equals(BoardState.CLOSED)) {
-            return false;
+            throw new RuntimeException("이미 완료된 게시글입니다.");
         }
         LocalDateTime now = LocalDateTime.now();
 
