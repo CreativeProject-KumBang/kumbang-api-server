@@ -49,6 +49,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/auth/authmail",
             "/api/auth/login",
             "/api/auth/refreshtoken",
+            "/.well-known/**",
+            "/webroot/**",
             "/image/**",
             "/ws/**"
     };
