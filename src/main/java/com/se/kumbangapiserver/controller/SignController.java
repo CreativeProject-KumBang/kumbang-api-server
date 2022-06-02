@@ -54,7 +54,7 @@ public class SignController {
             return ResponseEntity.ok(ResponseForm.builder().status(true).response(Collections.singletonList("인증메일이 발송되었습니다.")).build());
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.ok(ResponseForm.builder().status(false).response(Collections.singletonList("인증메일 발송에 실패하였습니다.")).build());
+            return ResponseEntity.ok(ResponseForm.builder().status(false).response(Collections.singletonList(e.getMessage())).build());
         }
     }
 

@@ -99,6 +99,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Integer authEmailSend(String email) {
+        if (email.isEmpty()) {
+            throw new IllegalArgumentException("이메일을 입력해주세요.");
+        }
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
