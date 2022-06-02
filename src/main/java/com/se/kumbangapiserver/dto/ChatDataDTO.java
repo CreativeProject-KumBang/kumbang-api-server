@@ -19,4 +19,6 @@ public class ChatDataDTO {
     private LocalDateTime createdAt;
     private UserDTO sender;
     private Boolean isRead;
+    private Boolean isRemoved;
+    private Boolean isComplete;
 }

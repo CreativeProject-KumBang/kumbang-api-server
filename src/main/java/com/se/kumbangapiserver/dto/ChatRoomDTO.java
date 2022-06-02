@@ -22,6 +22,8 @@ public class ChatRoomDTO {
     private LocalDateTime removedAt;
     private UserDTO buyer;
     private ChatDataDTO lastMessage;
+    private Boolean isRemoved;
+    private Boolean isCompleted;
     private Boolean isBuyer;
     private Boolean isNew = false;
 }

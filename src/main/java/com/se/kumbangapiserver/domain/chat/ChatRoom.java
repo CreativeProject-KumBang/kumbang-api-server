@@ -48,6 +48,12 @@ public class ChatRoom extends BaseTimeEntity {
     @Transient
     private boolean isBuyer;
 
+    @Transient
+    private Boolean isRemoved;
+
+    @Transient
+    private Boolean isCompleted;
+
     public Long getId() {
         return id;
     }
@@ -62,6 +68,22 @@ public class ChatRoom extends BaseTimeEntity {
 
     public boolean isBuyer() {
         return isBuyer;
+    }
+
+    public void setRemoved(Boolean removed) {
+        isRemoved = removed;
+    }
+
+    public Boolean getRemoved() {
+        return isRemoved;
+    }
+
+    public void setCompleted(Boolean completed) {
+        isCompleted = completed;
+    }
+
+    public Boolean getCompleted() {
+        return isCompleted;
     }
 
     public void setLastMessage(ChatData lastMessage) {
@@ -80,6 +102,8 @@ public class ChatRoom extends BaseTimeEntity {
                 .lastMessage(lastMessage == null ? null : lastMessage.toDTO())
                 .isBuyer(isBuyer)
                 .isNew(false)
+                .isRemoved(isRemoved)
+                .isCompleted(isCompleted)
                 .build();
     }
 }

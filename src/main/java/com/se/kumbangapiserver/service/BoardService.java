@@ -19,7 +19,7 @@ public interface BoardService {
 
     void deleteBoard(String boardId);
 
-    Long updateBoard(BoardDetailDTO boardDetailDTO);
+//    Long updateBoard(String id, BoardDetailDTO boardDetailDTO);
 
     Page<BoardListDTO> getBoardList(Map<String, String> params, Pageable pageable);
 

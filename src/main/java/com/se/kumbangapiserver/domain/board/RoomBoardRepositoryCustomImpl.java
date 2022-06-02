@@ -23,7 +23,8 @@ public class RoomBoardRepositoryCustomImpl implements RoomBoardRepositoryCustom 
                         durationBetween(query),
                         priceStart(query),
                         priceEnd(query),
-                        roomBoard.state.eq(BoardState.OPEN)
+                        roomBoard.state.eq(BoardState.OPEN),
+                        roomBoard.removedAt.isNull()
                 )
                 .fetch();
     }
@@ -65,11 +66,17 @@ public class RoomBoardRepositoryCustomImpl implements RoomBoardRepositoryCustom 
         if (query.getPriceStart() == null) {
             return null;
         }
+        if (query.getPriceStart() == 0) {
+            return null;
+        }
         return QRoomBoard.roomBoard.price.goe(query.getPriceStart());
     }
 
     BooleanExpression priceEnd(RoomBoardSearchQuery query) {
         if (query.getPriceEnd() == null) {
+            return null;
+        }
+        if (query.getPriceEnd() == 101000) {
             return null;
         }
         return QRoomBoard.roomBoard.price.loe(query.getPriceEnd());

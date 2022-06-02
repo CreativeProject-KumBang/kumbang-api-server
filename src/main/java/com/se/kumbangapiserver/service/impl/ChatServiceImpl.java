@@ -1,6 +1,7 @@
 package com.se.kumbangapiserver.service.impl;
 
 import com.se.kumbangapiserver.common.Common;
+import com.se.kumbangapiserver.domain.board.BoardState;
 import com.se.kumbangapiserver.domain.board.RoomBoard;
 import com.se.kumbangapiserver.domain.board.RoomBoardRepository;
 import com.se.kumbangapiserver.domain.chat.ChatData;
@@ -88,11 +89,9 @@ public class ChatServiceImpl implements ChatService {
         User contextUser = userRepository.findById(Common.getUserContext().getId()).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
         Page<ChatRoom> byRoomBoard = chatRoomRepository.findDistinctByBuyerOrRoomBoard_User(contextUser, contextUser, pageable);
         Page<ChatRoom> buyerSetPage = byRoomBoard.map(e -> {
-            if (e.getBuyer().getId().equals(contextUser.getId())) {
-                e.setBuyer(true);
-                return e;
-            }
-            e.setBuyer(false);
+            e.setBuyer(e.getBuyer().getId().equals(contextUser.getId()));
+            e.setRemoved(e.getRoomBoard().getRemovedAt() != null);
+            e.setCompleted(e.getRoomBoard().getState().equals(BoardState.CLOSED));
             return e;
         });
         Page<ChatRoomDTO> map = buyerSetPage.map(ChatRoom::toDTO);
@@ -101,6 +100,7 @@ public class ChatServiceImpl implements ChatService {
             if ((lastMessage != null) && (!lastMessage.getSender().getId().equals(String.valueOf(contextUser.getId()))) && (!lastMessage.getIsRead())) {
                 e.setIsNew(true);
             }
+            
         });
         return map;
     }

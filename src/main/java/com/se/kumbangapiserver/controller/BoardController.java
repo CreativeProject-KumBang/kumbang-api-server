@@ -59,23 +59,25 @@ public class BoardController {
     @ResponseBody
     public ResponseEntity<ResponseForm<Object>> deleteBoard(@PathVariable("id") String id) {
         try {
+            log.info("deleteBoard : {}", id);
             boardService.deleteBoard(id);
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList("success")).build());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
         }
     }
 
-    @PutMapping("/api/board/{id}")
-    @ResponseBody
-    public ResponseEntity<ResponseForm<Object>> updateBoard(@PathVariable("id") String id, @RequestBody BoardDetailDTO newBoard) {
-        try {
-            Long updatedId = boardService.updateBoard(newBoard);
-            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(updatedId)).build());
-        } catch (Exception e) {
-            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
-        }
-    }
+//    @PutMapping("/api/board/{id}")
+//    @ResponseBody
+//    public ResponseEntity<ResponseForm<Object>> updateBoard(@PathVariable("id") String id, @RequestBody BoardDetailDTO newBoard) {
+//        try {
+//            Long updatedId = boardService.updateBoard(id, newBoard);
+//            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(updatedId)).build());
+//        } catch (Exception e) {
+//            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
+//        }
+//    }
 
     @GetMapping("/api/board/list")
     @ResponseBody

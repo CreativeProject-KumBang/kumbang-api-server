@@ -5,10 +5,7 @@ import com.se.kumbangapiserver.domain.board.BoardState;
 import com.se.kumbangapiserver.domain.board.Details;
 import com.se.kumbangapiserver.domain.board.DurationTerm;
 import com.se.kumbangapiserver.domain.board.PriceType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
@@ -19,6 +16,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @SuperBuilder
+@Setter
 @AllArgsConstructor
 @ToString
 public class BoardDetailDTO {

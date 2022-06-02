@@ -9,5 +9,5 @@ public interface RoomBoardRepository extends JpaRepository<RoomBoard, Long>, Roo
 
     Page<RoomBoard> findByCordXBetweenAndCordYBetween(String cordX1, String cordX2, String cordY1, String cordY2, Pageable pageable);
 
-    Page<RoomBoard> findByUser(User user, Pageable pageable);
+    Page<RoomBoard> findByUserAndRemovedAtIsNull(User user, Pageable pageable);
 }

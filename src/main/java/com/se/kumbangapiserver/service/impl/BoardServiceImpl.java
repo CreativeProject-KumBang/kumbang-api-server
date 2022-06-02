@@ -130,18 +130,23 @@ public class BoardServiceImpl implements BoardService {
                 throw new RuntimeException("권한이 없습니다.");
             }
             roomBoard.setRemoved();
+            if (!roomBoard.getState().equals(BoardState.CLOSED)) {
+                Region region = regionRepository.findById(roomBoard.getRegion().getId()).orElseThrow(() -> new RuntimeException("존재하지 않는 지역입니다."));
+                region.removeBoard(roomBoard);
+            }
         });
     }
 
-    @Override
-    @Transactional
-    public Long updateBoard(BoardDetailDTO boardDetailDTO) {
-        RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
-        roomBoard.setUpdatedAt(LocalDateTime.now());
-        RoomBoard save = roomBoardRepository.save(roomBoard);
-
-        return save.getId();
-    }
+//    @Override
+//    @Transactional
+//    public Long updateBoard(String id, BoardDetailDTO boardDetailDTO) {
+//        boardDetailDTO.setBoardId(Long.valueOf(id));
+//        RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
+//        roomBoard.setUpdatedAt(LocalDateTime.now());
+//        RoomBoard save = roomBoardRepository.save(roomBoard);
+//
+//        return save.getId();
+//    }
 
     @Override
     public Page<BoardListDTO> getBoardList(Map<String, String> params, Pageable pageable) {
@@ -210,14 +215,14 @@ public class BoardServiceImpl implements BoardService {
 
         LocalDateTime now = LocalDateTime.now();
 
+        Region region = regionRepository.findById(roomBoard.getRegion().getId()).orElseThrow(() -> new RuntimeException("존재하지 않는 지역입니다."));
+        region.removeBoard(roomBoard);
+
         roomBoard.setState(BoardState.CLOSED);
         roomBoard.setUpdatedAt(now);
         roomBoard.setCompleteData(completeDataDTO);
 
         roomBoardRepository.save(roomBoard);
-
-        Region region = regionRepository.findById(roomBoard.getRegion().getId()).orElseThrow(() -> new RuntimeException("존재하지 않는 지역입니다."));
-        region.removeBoard(roomBoard);
 
         CompleteTransaction trans = CompleteTransaction.builder()
                 .address(roomBoard.getLocation())
@@ -247,7 +252,7 @@ public class BoardServiceImpl implements BoardService {
     public Page<BoardListDTO> getMyBoardList(String userId, Pageable pageable) {
 
         User contextUser = userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new RuntimeException("유저 정보를 찾을 수 없습니다."));
-        Page<RoomBoard> findBoards = roomBoardRepository.findByUser(contextUser, pageable);
+        Page<RoomBoard> findBoards = roomBoardRepository.findByUserAndRemovedAtIsNull(contextUser, pageable);
 
         return findBoards.map(RoomBoard::toListDTO);
     }
