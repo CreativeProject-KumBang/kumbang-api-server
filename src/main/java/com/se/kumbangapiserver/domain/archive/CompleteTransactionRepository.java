@@ -15,7 +15,8 @@ public interface CompleteTransactionRepository extends JpaRepository<CompleteTra
 
     Optional<CompleteTransaction> findByRoomBoard(RoomBoard roomBoard);
 
-    @Query(value = "SELECT * from complete_transaction where buyer_id = ?1 or board_id = (select id from room_board where user_id = ?1)", nativeQuery = true)
+    @Query(value = "SELECT * from complete_transaction where buyer_id = ?1 or room_board_id = (select board_id from room_board where user_id = ?1) order by close_year, close_month, close_day desc", nativeQuery = true)
     Page<CompleteTransaction> findAllByUserId(Long userId, Pageable pageable);
+
 
 }

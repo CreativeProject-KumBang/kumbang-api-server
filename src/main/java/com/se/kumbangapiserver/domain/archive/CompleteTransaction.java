@@ -6,6 +6,7 @@ import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.dto.CompleteDataDTO;
 import com.se.kumbangapiserver.dto.TransactionDataDTO;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -16,6 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@Getter
 @Table(name = "complete_transaction")
 public class CompleteTransaction extends BaseTimeEntity {
 

@@ -9,6 +9,7 @@ import com.se.kumbangapiserver.domain.user.User;
 import com.se.kumbangapiserver.domain.user.UserRepository;
 import com.se.kumbangapiserver.dto.BoardListDTO;
 import com.se.kumbangapiserver.dto.CompleteDataDTO;
+import com.se.kumbangapiserver.dto.TransactionDataDTO;
 import com.se.kumbangapiserver.dto.UserDTO;
 import com.se.kumbangapiserver.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +46,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getUser(String userId) {
-        return userRepository.findById(Long.valueOf(userId)).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다.")).toDTO();
+    public UserDTO getUser() {
+        User userContext = Common.getUserContext();
+        return userRepository.findById(userContext.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다.")).toDTO();
     }
 
     @Override
@@ -66,12 +68,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CompleteDataDTO getHistory(Pageable pageable) {
+    public Page<TransactionDataDTO> getHistory(Pageable pageable) {
         User userContext = Common.getUserContext();
         User user = userRepository.findById(userContext.getId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
         Page<CompleteTransaction> completeTransactions = completeTransactionRepository.findAllByUserId(userContext.getId(), pageable);
-
-        return null;
+        return completeTransactions.map(e -> TransactionDataDTO.builder()
+                .id(e.getId())
+                .board(e.getRoomBoard().toDetailDTO())
+                .region(e.getRegion().toRegionDetailDTO())
+                .buyer(e.getBuyer().toDTO())
+                .year(e.getYear())
+                .month(e.getMonth())
+                .day(e.getDay())
+                .price(e.getPrice())
+                .contractDeposit(e.getContractDeposit())
+                .contractFee(e.getContractFee())
+                .build());
     }
 
 

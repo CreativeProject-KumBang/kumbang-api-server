@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,11 +33,12 @@ public class UserController {
         }
     }
 
-    @GetMapping("/api/mypage/{userId}")
-    public ResponseEntity<ResponseForm<Object>> getUser(@PathVariable String userId) {
-
+    @GetMapping("/api/mypage/my-info")
+    @ResponseBody
+    public ResponseEntity<ResponseForm<Object>> getUser() {
         try {
-            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(userService.getUser(userId))).build());
+            log.info("getUser");
+            return ResponseEntity.ok(ResponseForm.builder().status(Boolean.TRUE).response(userService.getUser()).build());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.ok(ResponseForm.builder().status(Boolean.FALSE).response(Collections.singletonList("fail")).build());
@@ -71,8 +69,10 @@ public class UserController {
     }
 
     @GetMapping("/api/mypage/history")
+    @ResponseBody
     public ResponseForm<Object> getHistory(Pageable pageable) {
         try {
+            log.info("get history");
             return ResponseForm.builder().status(Boolean.TRUE).response(userService.getHistory(pageable)).build();
         } catch (Exception e) {
             e.printStackTrace();
