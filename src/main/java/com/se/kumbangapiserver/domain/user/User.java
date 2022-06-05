@@ -152,6 +152,7 @@ public class User extends BaseTimeEntity implements UserDetails {
                 .name(this.name)
                 .nickname(this.nickname)
                 .phoneNumber(this.phoneNumber)
+                .address(this.address)
                 .removedAt(this.removedAt)
                 .role(this.roles)
                 .createdAt(this.getCreatedAt())

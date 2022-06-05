@@ -102,6 +102,9 @@ public class AuthServiceImpl implements AuthService {
         if (email.isEmpty()) {
             throw new IllegalArgumentException("이메일을 입력해주세요.");
         }
+        if (!email.matches("^[\\da-zA-Z]([-_.]?[\\da-zA-Z])*@kumoh.ac.kr")) {
+            throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
+        }
         if (userRepository.findByEmail(email).isPresent()) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }

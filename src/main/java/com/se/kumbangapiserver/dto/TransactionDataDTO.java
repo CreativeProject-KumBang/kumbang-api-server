@@ -1,11 +1,13 @@
 package com.se.kumbangapiserver.dto;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
-
+@Getter
+@Setter
 public class TransactionDataDTO {
 
     private Long id;

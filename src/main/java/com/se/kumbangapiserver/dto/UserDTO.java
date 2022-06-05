@@ -17,6 +17,7 @@ public class UserDTO {
     private String phoneNumber;
     private String birthDate;
     private String password;
+    private String address;
     private String name;
     private List<String> role;
     private LocalDateTime createdAt;

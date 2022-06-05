@@ -73,7 +73,7 @@ public class UserController {
     public ResponseForm<Object> getHistory(Pageable pageable) {
         try {
             log.info("get history");
-            return ResponseForm.builder().status(Boolean.TRUE).response(userService.getHistory(pageable)).build();
+            return ResponseForm.builder().status(Boolean.TRUE).response(Collections.singletonList(userService.getHistory(pageable))).build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseForm.builder().status(Boolean.FALSE).response("fail").build();
