@@ -69,15 +69,22 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public Long createBoard(BoardDetailDTO boardDetailDTO) {
+        // 토큰을 이용해 현재 로그인 된 사용자의 pk를 가져옴
         boardDetailDTO.setUser(Common.getUserContext().toDTO());
 
+        // 컨트롤러단에서 넘어온 DTO를 이용해 RoomBoard Entity를 생성
         RoomBoard roomBoard = RoomBoard.createEntityFromDTO(boardDetailDTO);
 
+        // 작성된 주소 값을 API를 이용해 지도상 좌표로 변환
         Map<String, String> data = mapAPI.AddressToCoordinate(boardDetailDTO.getLocation());
 
+        // 받아온 좌표를 엔티티에 저장
         roomBoard.setNewBoard(data);
+
+        // 해당 좌표를 이용해 행정구역을 받아온다
         Map<String, String> region = mapAPI.CoordinateToRegion(roomBoard.getCordX(), roomBoard.getCordY());
 
+        // 행정구역의 평균 좌표와 평균 가격을 갱신한다.
         regionRepository.findByStateAndCityAndTown(
                 region.get("region_1depth_name"),
                 region.get("region_2depth_name"),
@@ -86,6 +93,8 @@ public class BoardServiceImpl implements BoardService {
             roomBoard.setRegion(r);
             r.addBoard(roomBoard);
         });
+
+        // 글에 포함된 파일과 해당 글의 연관관계를 생성한다.
         List<BoardFiles> files = roomBoard.getFiles();
         if (boardDetailDTO.getFiles() != null) {
             boardDetailDTO.getFiles().forEach(i -> {
@@ -99,6 +108,8 @@ public class BoardServiceImpl implements BoardService {
                     }
             );
         }
+
+        // 해당 작성글이 장기인지 단기인지 판별 후 저장한다.
         long between = ChronoUnit.DAYS.between(
                 boardDetailDTO.getDurationStart(),
                 boardDetailDTO.getDurationEnd());
@@ -109,7 +120,7 @@ public class BoardServiceImpl implements BoardService {
             roomBoard.setDurationTerm(DurationTerm.SHORT);
         }
 
-
+        // 작성완료된 entity 를 db에 저장한다.
         RoomBoard save = roomBoardRepository.save(roomBoard);
 
         return save.getId();
@@ -267,14 +278,17 @@ public class BoardServiceImpl implements BoardService {
 
     private Page<BoardListDTO> findListAndSort(Map<String, String> params, Pageable pageable) {
 
+        // 파라미터의 x값과 y값을 받아온다.
         BigDecimal x = new BigDecimal(params.get("x"));
         BigDecimal y = new BigDecimal(params.get("y"));
 
+        // level 값에 따라서 검색할 범위를 변경한다.
         String range = "0.06";
         if (Integer.parseInt(params.get("level")) < 3) {
             range = "0.02";
         }
 
+        // 범위에 따라 검색할 좌표의 최소, 최대를 구한다.
         BigDecimal minX = x.subtract(new BigDecimal(range));
         BigDecimal maxX = x.add(new BigDecimal(range));
         BigDecimal minY = y.subtract(new BigDecimal(range));
@@ -282,6 +296,7 @@ public class BoardServiceImpl implements BoardService {
 
         List<RoomBoard> boardList;
 
+        // 좌표 정보를 Dynamic Query 를 위한 조건 클래스에 담는다.
         RoomBoardSearchQuery queryParams = RoomBoardSearchQuery.builder()
                 .minCordX(String.valueOf(minX))
                 .maxCordX(String.valueOf(maxX))
@@ -289,6 +304,7 @@ public class BoardServiceImpl implements BoardService {
                 .maxCordY(String.valueOf(maxY))
                 .build();
 
+        // 이후 존재하는 조건을 조건 클래스에 담는다.
         if (params.containsKey("durationType")) {
             queryParams.setDurationType(params.get("durationType"));
         }
@@ -305,13 +321,15 @@ public class BoardServiceImpl implements BoardService {
             queryParams.setPriceEnd(Integer.parseInt(params.get("priceEnd")));
         }
 
-
+        // 완성된 Dynamic Query 조건문을 통해 조회한다.
         boardList = roomBoardRepository.findByDynamicQuery(queryParams);
 
+        // 조회된 게시글들의 좌표를 이용해 현재 좌표와 거리를 계산한다.
         boardList.forEach(board ->
                 board.setDistance(x, y)
         );
 
+        // 현재 좌표와 거리가 가까운 순서대로 조회결과를 정렬한다.
         boardList.sort(Comparator.comparing(RoomBoard::getDistance));
         List<BoardListDTO> dtoList = boardList.stream().map(RoomBoard::toListDTO).collect(Collectors.toList());
 
